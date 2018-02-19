@@ -4,10 +4,8 @@
 
 const   os = require('os'),
         fs = require('fs'),
-        path = require('path'),
         http = require('http'),
         LiveMe = require('liveme-api'),
-        formatDuration = require('format-duration'),
         m3u8stream = require('./modules/m3u8stream');               // We use a custom variation of this module
 
 var     config = {
@@ -56,8 +54,9 @@ function main() {
         });
     }
 
+
     /*
-        Start Timers
+        Replay Check Interval - Runs every minute
     */
     setInterval(() => {
         minuteTick++;
@@ -71,9 +70,16 @@ function main() {
     }, 60000);
 
 
+    /*
+        Download Check Interval - Runs every second
+    */
+    setInterval(() => {
+        downloadFile();
+    }, 1000);
+
 
     /*
-        Start Web Server
+        Internal Web Server - Used for command interface
     */
     http.createServer( (req, res) => {
 
@@ -86,6 +92,7 @@ function main() {
 
 
         switch (chunks[0]) {
+
             case 'add-account':
                 var add = true, i = 0;
                 for (i = 0; i < accounts.length; i++) {
@@ -109,7 +116,10 @@ function main() {
                     response.message = 'Account already in list.';
                 break;
 
+
             case 'remove-account':
+                response.message = 'Account not in the list.';
+
                 for (var i = 0; i < accounts.length; i++) {
                     if (accounts[i].userid == chunks[1]) {
                         accounts.splice(i, 1);
@@ -122,9 +132,8 @@ function main() {
                     JSON.stringify(accounts), 
                     () => {}
                 );
-
-                response.message = 'Account not found in list.';
                 break;
+
 
             case 'list-accounts':
                 response.message = 'Accounts in list';
@@ -133,6 +142,7 @@ function main() {
                     response.data.push(accounts[i].userid);
                 }
                 break;
+
 
             case 'shutdown':
                 fs.writeFile(
@@ -147,9 +157,11 @@ function main() {
                 
                 break;
 
+
             default:
                 response.message = 'Invalid command.';
                 break;
+
         }
 
         res.writeHead(200, { 'Content-Type': 'text/javascript'});
@@ -159,6 +171,16 @@ function main() {
     }).listen(config.localPort);   
 }
 
+
+
+
+
+
+
+
+/*
+    Account Scan Loop
+*/
 function accountScanLoop() {
 
     if (account_index < accounts.length) {
@@ -168,15 +190,18 @@ function accountScanLoop() {
     }
 
     setTimeout(function(){
-        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
-        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
-        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
-        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
-        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
+        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
+        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
+        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
+        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
     }, 200);
 }
 
-function scanAccount(i) {
+/*
+    Replay Scan
+*/
+function scanForNewReplays(i) {
 
     if (accounts[i] == undefined) return;
 
@@ -208,6 +233,20 @@ function scanAccount(i) {
 
 }
 
+
+
+
+
+
+
+
+/*
+    Download Handler
+
+    Checks first to see if there are any replays waiting to be downloaded
+    then checks to see if there's any concurrent slots open then gets the
+    info on the replay before sending to the stream download module.
+*/
 function downloadFile() {
 
     if (download_list.length == 0) return;
@@ -233,7 +272,10 @@ function downloadFile() {
         m3u8stream(video, {
             chunkReadahead: 5,
             on_progress: (e) => {
-
+                /*
+                    e.index = current chunk
+                    e.total = total chunks
+                */
             }, 
             on_complete: (e) => {
                 activeDownloads--;
