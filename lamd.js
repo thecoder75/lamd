@@ -94,9 +94,9 @@ function main() {
         switch (chunks[0]) {
 
             case 'add-account':
-                var add = true, i = 0;
+                var add_this = true, i = 0;
                 for (i = 0; i < accounts.length; i++) {
-                    if (accounts[i] == chunks[1]) { add = false; }
+                    if (accounts[i] == chunks[1]) { add_this = false; }
                 }
 
                 if (add_this) {
