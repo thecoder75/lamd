@@ -16,8 +16,7 @@ To download, click on the `Releases` link above and choose the version that matc
 #### Supported OS/Platforms
 - Microsoft Windows 7 or higher (32-bit or 64-bit)
 - Ubuntu-based Linux and Debian Distributions (32-bit or 64-bit)
-
-***No macOS version is available at this time.***
+- macOS 10.12 or higher (64-bit only)
 
 * * *
 
