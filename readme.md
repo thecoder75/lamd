@@ -7,8 +7,7 @@
 ## What Is LiveMe Account Monitor Daemon?
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
-## Configuration
-When you first run it, it will create a local `config.json` file which will hold the basic operating configuration.  Information on monitored accounts will be stored in the `accounts.json` file.
+* * *
 
 ## Download Prebuilt Releases
 
@@ -20,21 +19,29 @@ To download, click on the `Releases` link above and choose the version that matc
 
 ***No macOS version is available at this time.***
 
+* * *
+
+## Configuration
+When you first run it, it will create a local `config.json` file which will hold the basic operating configuration.  Information on monitored accounts will be stored in the `accounts.json` file.
+
+* * *
+
 ## Commands
 **These are the support commands when the daemon is running.**
 
-### Add Account
+#### Add Account
 **Syntax:** `http://localhost:8280/add-account/[liveme-userid]`
 
-### Remove Account
+#### Remove Account
 **Syntax:** `http://localhost:8280/remove-account/[liveme-userid]`
 
-### List Accounts
+#### List Accounts
 **Syntax:** `http://localhost:8280/list-accounts`
 
-### Shutdown Daemon
+#### Shutdown Daemon
 **Syntax:** `http://localhost:8280/shutdown`
 
+* * *
 
 ## Built With
 * [NodeJS](http://nodejs.org)
