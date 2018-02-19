@@ -1,6 +1,6 @@
 {
   "name": "liveme-mon-cli",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Command line utility to monitor accounts for new replays and automatically download them",
   "homepage": "https://thecoderstoolbox.com",
   "main": "index.js",
