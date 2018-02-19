@@ -23,16 +23,16 @@ To download, click on the `Releases` link above and choose the version that matc
 ## Commands
 **These are the support commands when the daemon is running.**
 
-###Add Account
+### Add Account
 **Syntax:** `http://localhost:8280/add-account/[liveme-userid]`
 
-###Remove Account
+### Remove Account
 **Syntax:** `http://localhost:8280/remove-account/[liveme-userid]`
 
-###List Accounts
+### List Accounts
 **Syntax:** `http://localhost:8280/list-accounts`
 
-###Shutdown Daemon
+### Shutdown Daemon
 **Syntax:** `http://localhost:8280/shutdown`
 
 
