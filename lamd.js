@@ -17,11 +17,15 @@ var     config = {
             loopCycle: 30,
             localPort: 8280            
         },
+        
         accounts = [],
         account_index = 0,
+        
         download_list = [],
         activeDownloads = 0,
+        
         minuteTick = 0,
+
         APIVERSION = '1.0';
 
 
@@ -59,7 +63,10 @@ function main() {
         minuteTick++;
         if (minuteTick == config.loopCycle) {
             minuteTick = 0;
-            setImmediate(() => { scanAccounts(); });
+            setImmediate(() => { 
+                account_index = 0;
+                accountScanLoop();
+            });
         }
     }, 60000);
 
@@ -80,20 +87,26 @@ function main() {
 
         switch (chunks[0]) {
             case 'add-account':
-                accounts.push({
-                    userid: chunks[1],
-                    scanned: Math.floor((new Date()).getTime() / 1000)
-                });
+                var add = true, i = 0;
+                for (i = 0; i < accounts.length; i++) {
+                    if (accounts[i] == chunks[1]) { add = false; }
+                }
 
-                fs.writeFile(
-                    'accounts.json', 
-                    JSON.stringify(accounts), 
-                    () => {
+                if (add_this) {
+                    accounts.push({
+                        userid: chunks[1],
+                        scanned: Math.floor((new Date()).getTime() / 1000)
+                    });
 
-                    }
-                );
+                    fs.writeFile(
+                        'accounts.json', 
+                        JSON.stringify(accounts), 
+                        () => {}
+                    );
 
-                response.message = 'Account added.';
+                    response.message = 'Account added.';
+                } else 
+                    response.message = 'Account already in list.';
                 break;
 
             case 'remove-account':
@@ -107,9 +120,7 @@ function main() {
                 fs.writeFile(
                     'accounts.json', 
                     JSON.stringify(accounts), 
-                    () => {
-
-                    }
+                    () => {}
                 );
 
                 response.message = 'Account not found in list.';
@@ -127,9 +138,7 @@ function main() {
                 fs.writeFile(
                     'config.json', 
                     JSON.stringify(config, null, 2), 
-                    () => {
-
-                    }
+                    () => {}
                 );
 
                 setTimeout(() => {
@@ -150,8 +159,91 @@ function main() {
     }).listen(config.localPort);   
 }
 
+function accountScanLoop() {
 
+    if (account_index < accounts.length) {
+        setTimeout(() => {
+            accountScanLoop();
+        }, 200);
+    }
 
-function scanAccounts() {
+    setTimeout(function(){
+        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+        if (account_index < accounts.length) { account_index++; scanAccount(account_index); }
+    }, 200);
+}
+
+function scanAccount(i) {
+
+    if (accounts[i] == undefined) return;
+
+    LiveMe.getUserReplays(accounts[i].userid, 1, 5).then(replays => {
+
+        if (replays == undefined) return;
+        if (replays.length < 1) return;
+
+        var ii = 0, 
+            count = 0, 
+            userid = replays[0].userid,
+            last_scanned = null,
+            dt = Math.floor((new Date()).getTime() / 1000);
+
+        for (ii = 0; ii < accounts.length; ii++) {
+            if (accounts[ii] == userid) {
+                last_scanned = accounts[ii].scanned;
+                accounts[ii].scanned = dt;
+            }
+        }
+
+        for (ii = 0; ii < replays.length; ii++) {
+            if (replays[ii].vtime - d > 0) {
+                download_list.push(replays[ii].vid);
+            }
+        }
+
+    });
+
+}
+
+function downloadFile() {
+
+    if (download_list.length == 0) return;
+    if (activeDownloads >= config.downloadConcurrent ) return;
+
+    activeDownloads++;
+
+    LiveMe.getVideoInfo(download_list[0]).then(video => {
+
+        var filename = config.downloadTemplate
+                .replace(/%%broadcaster%%/g, video.uname)
+                .replace(/%%longid%%/g, video.userid)
+                .replace(/%%replayid%%/g, video.vid)
+                .replace(/%%replayviews%%/g, video.playnumber)
+                .replace(/%%replaylikes%%/g, video.likenum)
+                .replace(/%%replayshares%%/g, video.sharenum)
+                .replace(/%%replaytitle%%/g, video.title ? video.title : 'untitled')
+                .replace(/%%replayduration%%/g, video.videolength);            
+
+        filename += '.ts';
+        download_list.shift();
+
+        m3u8stream(video, {
+            chunkReadahead: 5,
+            on_progress: (e) => {
+
+            }, 
+            on_complete: (e) => {
+                activeDownloads--;
+                setImmediate(() => { downloadFile(); });
+            },
+            on_error: (e) => {
+                activeDownloads--;
+                setImmediate(() => { downloadFile(); });
+            }
+        }).pipe(fs.createWriteStream(config.downloadPath + '/' + filename));
+    });
 
 }
