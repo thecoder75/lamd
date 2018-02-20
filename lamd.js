@@ -39,6 +39,9 @@ function main() {
             if (!err) {
                 config = JSON.parse(data);
                 if (config.downloadChunks > 5) config.downloadChunks = 5;
+                if (config.activeDownloads > 5) config.activeDownloads = 5;
+                if (config.loopCycle > 60) config.loopCycle = 60;
+                if (config.loopCycle < 10) config.loopCycle = 10;
             }
         });
     }
@@ -55,6 +58,10 @@ function main() {
     }
 
 
+    fs.writeFile('accounts.json', JSON.stringify(accounts), () => {} );
+    fs.writeFile('config.json', JSON.stringify(config), () => {} );
+
+
     /*
         Replay Check Interval - Runs every minute
     */
@@ -64,6 +71,7 @@ function main() {
             minuteTick = 0;
             setImmediate(() => { 
                 account_index = 0;
+                console.log('Beginning account scan...');
                 accountScanLoop();
             });
         }
@@ -225,6 +233,7 @@ function scanForNewReplays(i) {
 
         for (ii = 0; ii < replays.length; ii++) {
             if (replays[ii].vtime - d > 0) {
+                console.log('--> Found and added replay video id: ' + replays[ii].vid);
                 download_list.push(replays[ii].vid);
             }
         }
