@@ -1,6 +1,6 @@
 {
-  "name": "liveme-mon-cli",
-  "version": "1.0.1",
+  "name": "lamd",
+  "version": "1.0.2",
   "description": "Command line utility to monitor accounts for new replays and automatically download them",
   "homepage": "https://thecoderstoolbox.com",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node lamd.js",
-    "release": "pkg lamd.js --out-path ./builds"
+    "release": "pkg lamd.js --targets linux,win --out-path ./builds"
   },
   "author": "TheCoder75",
   "license": "GPL-3.0",
