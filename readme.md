@@ -11,12 +11,13 @@ This is a stand-alone application designed to run in the background and monitor 
 
 ## Download Prebuilt Releases
 
-To download, click on the `Releases` link above and choose the version that matches your OS.
+Downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
 #### Supported OS/Platforms
 - Microsoft Windows 7 or higher (32-bit or 64-bit)
 - Ubuntu-based Linux and Debian Distributions (32-bit or 64-bit)
-- macOS 10.12 or higher (64-bit only)
+
+***macOS is no longer supported.***
 
 * * *
 
