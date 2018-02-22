@@ -232,7 +232,7 @@ function scanForNewReplays(i) {
         }
 
         for (ii = 0; ii < replays.length; ii++) {
-            if (replays[ii].vtime - d > 0) {
+            if (replays[ii].vtime - dt > 0) {
                 console.log('--> Found and added replay video id: ' + replays[ii].vid);
                 download_list.push(replays[ii].vid);
             }

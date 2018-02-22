@@ -1,6 +1,6 @@
 {
   "name": "lamd",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Command line utility to monitor accounts for new replays and automatically download them",
   "homepage": "https://thecoderstoolbox.com",
   "main": "index.js",
