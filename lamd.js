@@ -13,7 +13,8 @@ var     config = {
             downloadConcurrent: 3,
             downloadTemplate: '%%replayid%%',
             loopCycle: 30,
-            localPort: 8280            
+            localPort: 8280,
+            console_output: false
         },
         
         accounts = [],
@@ -24,7 +25,7 @@ var     config = {
         
         minuteTick = 0,
 
-        APIVERSION = '1.0';
+        APIVERSION = '1.1';
 
 
 main();
@@ -42,6 +43,7 @@ function main() {
                 if (config.activeDownloads > 5) config.activeDownloads = 5;
                 if (config.loopCycle > 60) config.loopCycle = 60;
                 if (config.loopCycle < 10) config.loopCycle = 10;
+                if ((config.console_output == undefined) || (config.console_output == null)) config.console_output = false;
             }
         });
     }
@@ -62,6 +64,11 @@ function main() {
     fs.writeFile('config.json', JSON.stringify(config), () => {} );
 
 
+    if (config.console_output) {
+        process.stdout.write("LiveMe Account Monitor Daemon (LAMD)\nhttps://thecoderstoolbox.com/lamd\n\n");
+        process.stdout.write(accounts.length + " accounts loaded.\n\n");
+    }
+
     /*
         Replay Check Interval - Runs every minute
     */
@@ -71,7 +78,7 @@ function main() {
             minuteTick = 0;
             setImmediate(() => { 
                 account_index = 0;
-                console.log('Beginning account scan...');
+                if (config.console_output) process.stdout.write("Beginning account scan for new replays.\n");
                 accountScanLoop();
             });
         }
@@ -94,6 +101,7 @@ function main() {
         var chunks = req.url.substr(1).split('/'),
             response = {
                 api_version: APIVERSION,
+                code: 500,
                 message: '',
                 data: null
             }
@@ -102,12 +110,13 @@ function main() {
         switch (chunks[0]) {
 
             case 'add-account':
-                var add_this = true, i = 0;
+                var add_this = true, i = 0, isnum = /^\d+$/.test(chunks[1]);
+
                 for (i = 0; i < accounts.length; i++) {
                     if (accounts[i] == chunks[1]) { add_this = false; }
                 }
 
-                if (add_this) {
+                if (add_this && isnum) {
                     accounts.push({
                         userid: chunks[1],
                         scanned: Math.floor((new Date()).getTime() / 1000)
@@ -120,18 +129,38 @@ function main() {
                     );
 
                     response.message = 'Account added.';
+                    response.code = 200;
+                    if (config.console_output) process.stdout.write("Added " + chunks[1] + " for monitoring.\n");
                 } else 
                     response.message = 'Account already in list.';
+                    response.code = 200;
+                    if (config.console_output) process.stdout.write("Account " + chunks[1] + " already in database.\n");
+                break;
+
+
+            case 'check-account':
+                var is_present = false;
+
+                for (var i = 0; i < accounts.length; i++) {
+                    if (accounts[i] == chunks[1]) { is_present = true; }
+                }
+
+                response.message = is_present ? 'Account is in the list.' : 'Account not found in the list.';
+                response.data = [];
+                response.code = is_present ? 200 : 404;
                 break;
 
 
             case 'remove-account':
                 response.message = 'Account not in the list.';
+                response.code = 404;
 
                 for (var i = 0; i < accounts.length; i++) {
                     if (accounts[i].userid == chunks[1]) {
                         accounts.splice(i, 1);
                         response.message = 'Account removed.';
+                        response.code = 200;
+                        if (config.console_output) process.stdout.write("Account " + chunks[1] + " removed from list.\n";)
                     }
                 }
 
@@ -145,6 +174,7 @@ function main() {
 
             case 'list-accounts':
                 response.message = 'Accounts in list';
+                response.code = 200;
                 response.data = [];
                 for (var i = 0; i < accounts.length; i++) {
                     response.data.push(accounts[i].userid);
@@ -152,7 +182,24 @@ function main() {
                 break;
 
 
+
+
+            case 'add-download':
+                response.message = 'Replay added to queue.';
+                response.code = 200;
+                response.data = [];
+                var isnum = /^\d+$/.test(chunks[1]);
+                if (isnum) {
+                    if (config.console_output) process.stdout.write("Replay " + chunks[1] + " added to download queue.\n");
+                    download_list.push(chunks[1]);
+                }
+                break;
+
+
+
             case 'shutdown':
+                if (config.console_output) process.stdout.write("Shutting down and storing information...\n");
+
                 fs.writeFile(
                     'config.json', 
                     JSON.stringify(config, null, 2), 
@@ -233,7 +280,7 @@ function scanForNewReplays(i) {
 
         for (ii = 0; ii < replays.length; ii++) {
             if (replays[ii].vtime - dt > 0) {
-                console.log('--> Found and added replay video id: ' + replays[ii].vid);
+                if (config.console_output) process.stdout.write("UserID: " + userid + ", added replay " + replays[ii].vid + " to download queue.\n");
                 download_list.push(replays[ii].vid);
             }
         }
