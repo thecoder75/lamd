@@ -17,8 +17,6 @@ Downloads can be found on the [releases](https://github.com/thecoder75/lamd/rele
 - Microsoft Windows 7 or higher (32-bit or 64-bit)
 - Ubuntu-based Linux and Debian Distributions (32-bit or 64-bit)
 
-***macOS is no longer supported.***
-
 * * *
 
 ## Configuration
@@ -31,12 +29,23 @@ When you first run it, it will create a local `config.json` file which will hold
 
 #### Add Account
 **Syntax:** `http://localhost:8280/add-account/[liveme-userid]`
+**Response:** JSON data indicating if account was added or not.
+
+#### Check Account
+**Syntax:** `http://localhost:8280/check-account/[liveme-userid]`
+**Response:** JSON data indicating if account is already in the watch list or not.
 
 #### Remove Account
 **Syntax:** `http://localhost:8280/remove-account/[liveme-userid]`
+**Response:** JSON data indicating if account was removed.
 
 #### List Accounts
 **Syntax:** `http://localhost:8280/list-accounts`
+**Response:** JSON data with list of all accounts currently in the watch list.
+
+#### Manually Add Replay
+**Syntax:** `http://localhost:8280/add-replay/[video-id]`
+**Response:** JSON data indicating the replay was added for download.
 
 #### Shutdown Daemon
 **Syntax:** `http://localhost:8280/shutdown`
