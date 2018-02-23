@@ -14,7 +14,7 @@ var     config = {
             downloadTemplate: '%%replayid%%',
             loopCycle: 30,
             localPort: 8280,
-            console_output: false
+            console_output: true
         },
         
         accounts = [],
@@ -133,7 +133,7 @@ function main() {
                     if (config.console_output) process.stdout.write("Added " + chunks[1] + " for monitoring.\n");
                 } else 
                     response.message = 'Account already in list.';
-                    response.code = 200;
+                    response.code = 302;
                     if (config.console_output) process.stdout.write("Account " + chunks[1] + " already in database.\n");
                 break;
 
@@ -160,7 +160,7 @@ function main() {
                         accounts.splice(i, 1);
                         response.message = 'Account removed.';
                         response.code = 200;
-                        if (config.console_output) process.stdout.write("Account " + chunks[1] + " removed from list.\n";)
+                        if (config.console_output) process.stdout.write("Account " + chunks[1] + " removed from list.\n");
                     }
                 }
 
@@ -196,6 +196,12 @@ function main() {
                 break;
 
 
+
+            case 'ping':
+                if (config.console_output) process.stdout.write("PING.\n");
+                response.message = 'Pong';
+                response.code = 200;
+                break;
 
             case 'shutdown':
                 if (config.console_output) process.stdout.write("Shutting down and storing information...\n");
