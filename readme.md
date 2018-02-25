@@ -44,7 +44,7 @@ When you first run it, it will create a local `config.json` file which will hold
 **Response:** JSON data with list of all accounts currently in the watch list.
 
 #### Manually Add Replay
-**Syntax:** `http://localhost:8280/add-replay/[video-id]`
+**Syntax:** `http://localhost:8280/add-download/[video-id]`
 **Response:** JSON data indicating the replay was added for download.
 
 #### Shutdown Daemon
