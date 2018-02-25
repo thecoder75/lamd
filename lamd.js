@@ -109,6 +109,7 @@ function main() {
 
         switch (chunks[0]) {
 
+            case 'add-user':
             case 'add-account':
                 var add_this = true, i = 0, isnum = /^\d+$/.test(chunks[1]);
 
@@ -138,6 +139,7 @@ function main() {
                 break;
 
 
+            case 'check-user':
             case 'check-account':
                 var is_present = false;
 
@@ -151,6 +153,7 @@ function main() {
                 break;
 
 
+            case 'remove-user':
             case 'remove-account':
                 response.message = 'Account not in the list.';
                 response.code = 404;
@@ -172,6 +175,7 @@ function main() {
                 break;
 
 
+            case 'list-users':
             case 'list-accounts':
                 response.message = 'Accounts in list';
                 response.code = 200;
@@ -182,8 +186,7 @@ function main() {
                 break;
 
 
-
-
+            case 'add-replay':
             case 'add-download':
                 response.message = 'Replay added to queue.';
                 response.code = 200;
@@ -196,12 +199,12 @@ function main() {
                 break;
 
 
-
             case 'ping':
                 if (config.console_output) process.stdout.write("PING.\n");
                 response.message = 'Pong';
                 response.code = 200;
                 break;
+
 
             case 'shutdown':
                 if (config.console_output) process.stdout.write("Shutting down and storing information...\n");
@@ -251,8 +254,6 @@ function accountScanLoop() {
     }
 
     setTimeout(function(){
-        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
-        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
         if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
         if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
         if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
