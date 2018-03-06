@@ -59,11 +59,6 @@ function main() {
         });
     }
 
-
-    fs.writeFile('accounts.json', JSON.stringify(accounts), () => {} );
-    fs.writeFile('config.json', JSON.stringify(config), () => {} );
-
-
     if (config.console_output) {
         process.stdout.write("LiveMe Account Monitor Daemon (LAMD)\nhttps://thecoderstoolbox.com/lamd\n\n");
         process.stdout.write(accounts.length + " accounts loaded.\n\n");
@@ -83,7 +78,6 @@ function main() {
             });
         }
     }, 60000);
-
 
     /*
         Download Check Interval - Runs every second
