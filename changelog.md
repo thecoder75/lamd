@@ -1,5 +1,10 @@
 ## Change Log
 
+#### v1.1.3
+Fixed:
+- Fixed issue where settings and account files were getting wiped out.
+- Updated downloader to match LiveMe Pro Tools downloader
+
 #### v1.1.0
 Added:
 - Added support for adding replays to the download queue for downloading
