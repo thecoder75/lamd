@@ -108,7 +108,7 @@ function main() {
                 var add_this = true, i = 0, isnum = /^\d+$/.test(chunks[1]);
 
                 for (i = 0; i < accounts.length; i++) {
-                    if (accounts[i] == chunks[1]) { add_this = false; }
+                    if (accounts[i].userid == chunks[1]) { add_this = false; }
                 }
 
                 if (add_this && isnum) {
@@ -126,10 +126,11 @@ function main() {
                     response.message = 'Account added.';
                     response.code = 200;
                     if (config.console_output) process.stdout.write("Added " + chunks[1] + " for monitoring.\n");
-                } else 
+                } else {
                     response.message = 'Account already in list.';
                     response.code = 302;
                     if (config.console_output) process.stdout.write("Account " + chunks[1] + " already in database.\n");
+                }
                 break;
 
 
@@ -138,7 +139,7 @@ function main() {
                 var is_present = false;
 
                 for (var i = 0; i < accounts.length; i++) {
-                    if (accounts[i] == chunks[1]) { is_present = true; }
+                    if (accounts[i].userid == chunks[1]) { is_present = true; }
                 }
 
                 response.message = is_present ? 'Account is in the list.' : 'Account not found in the list.';
