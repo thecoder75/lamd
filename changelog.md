@@ -1,5 +1,12 @@
 ## Change Log
 
+#### v1.1.4
+Fixed:
+- Removed bug that allowed multiple accounts to be added.
+- Removed writing the config file on shutdown.  If its not there now at all, the program will use the defaults.
+- Added ability to configure downloader chunks again to help avoid timeout issues.
+- Added filename purifier to downloader to avoid illegal characters in filenames causing issues.
+
 #### v1.1.3
 Fixed:
 - Fixed issue where settings and account files were getting wiped out.

@@ -10,6 +10,7 @@ const   os = require('os'),
 
 var     config = {
             downloadPath: os.homedir() + '/Downloads',
+            downloadChunks: 5,
             downloadConcurrent: 3,
             downloadTemplate: '%%replayid%%',
             loopCycle: 30,
@@ -204,12 +205,6 @@ function main() {
             case 'shutdown':
                 if (config.console_output) process.stdout.write("Shutting down and storing information...\n");
 
-                fs.writeFile(
-                    'config.json', 
-                    JSON.stringify(config, null, 2), 
-                    () => {}
-                );
-
                 setTimeout(() => {
                     process.exit(0);    
                 }, 250);
@@ -324,11 +319,16 @@ function downloadFile() {
                 .replace(/%%replaytitle%%/g, video.title ? video.title : 'untitled')
                 .replace(/%%replayduration%%/g, video.videolength);            
 
+        // Cleanup any illegal characters in the filename
+        filename = filename.replace(/[/\\?%*:|"<>]/g, '-');
+        filename = filename.replace(/([^a-z0-9\s]+)/gi, '-');
+        filename = filename.replace(/[\u{0080}-\u{FFFF}]/gu, '');
+
         filename += '.ts';
         download_list.shift();
 
         m3u8stream(video, {
-            chunkReadahead: 5,
+            chunkReadahead: config.downloadChunks,
             on_progress: (e) => {
                 /*
                     e.index = current chunk
