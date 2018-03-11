@@ -1,5 +1,10 @@
 ## Change Log
 
+#### v1.1.5
+Fixed:
+- Changed new replay detection to fix not all new replays getting detected.
+- Fixed wording on startup to now state how many accounts loaded after they are loaded.
+
 #### v1.1.4
 Fixed:
 - Removed bug that allowed multiple accounts to be added.
