@@ -49,6 +49,13 @@ function main() {
         });
     }
 
+    if (config.console_output) {
+        process.stdout.write("LiveMe Account Monitor Daemon (LAMD)\nhttps://thecoderstoolbox.com/lamd\n\n");
+    }
+
+
+
+
     /*
         Load Account List
     */
@@ -56,13 +63,13 @@ function main() {
         fs.readFile('accounts.json', 'utf8', (err,data) => {
             if (!err) {
                 accounts = JSON.parse(data);
+
+                if (config.console_output) {
+                    process.stdout.write(accounts.length + " accounts loaded in.\n\n");
+                }
+
             }
         });
-    }
-
-    if (config.console_output) {
-        process.stdout.write("LiveMe Account Monitor Daemon (LAMD)\nhttps://thecoderstoolbox.com/lamd\n\n");
-        process.stdout.write(accounts.length + " accounts loaded.\n\n");
     }
 
     /*
@@ -245,9 +252,7 @@ function accountScanLoop() {
 
     setTimeout(function(){
         if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
-        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
-        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
-    }, 200);
+    }, 50);
 }
 
 /*
@@ -276,7 +281,7 @@ function scanForNewReplays(i) {
         }
 
         for (ii = 0; ii < replays.length; ii++) {
-            if (replays[ii].vtime - dt > 0) {
+            if (replays[ii].vtime - last_scanned > 0) {
                 if (config.console_output) process.stdout.write("UserID: " + userid + ", added replay " + replays[ii].vid + " to download queue.\n");
                 download_list.push(replays[ii].vid);
             }
