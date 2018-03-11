@@ -61,6 +61,7 @@ If you find any bugs or would like to help add features or additional functions,
 
 ## Contributors
 * [thecoder75](https://github.com/thecoder75)
+* [zp](https://github.com/zp)
 
 ## License
 This project is licensed under the GPL-3 License - see the [LICENSE](LICENSE) file for details
