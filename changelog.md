@@ -1,5 +1,9 @@
 ## Change Log
 
+#### v1.1.6
+Fixed:
+- Fixed bug where last scan time was not stored causing duplicate downloads to occur.
+
 #### v1.1.5
 Fixed:
 - Changed new replay detection to fix not all new replays getting detected.
