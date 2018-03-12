@@ -280,6 +280,13 @@ function scanForNewReplays(i) {
             }
         }
 
+        fs.writeFile(
+            'accounts.json', 
+            JSON.stringify(accounts), 
+            () => {}
+        );
+
+
         for (ii = 0; ii < replays.length; ii++) {
             if (replays[ii].vtime - last_scanned > 0) {
                 if (config.console_output) process.stdout.write("UserID: " + userid + ", added replay " + replays[ii].vid + " to download queue.\n");
