@@ -40,10 +40,12 @@ function main() {
         fs.readFile('config.json', 'utf8', (err,data) => {
             if (!err) {
                 config = JSON.parse(data);
-                if (config.downloadChunks > 5) config.downloadChunks = 5;
-                if (config.activeDownloads > 5) config.activeDownloads = 5;
-                if (config.loopCycle > 60) config.loopCycle = 60;
-                if (config.loopCycle < 10) config.loopCycle = 10;
+                if (config.downloadChunks < 1) config.downloadChunks = 1;
+                if (config.downloadChunks > 25) config.downloadChunks = 25;
+                if (config.downloadConcurrent > 5) config.downloadConcurrent = 5;
+                if (config.downloadConcurrent < 1) config.downloadConcurrent = 1;
+                if (config.loopCycle > 120) config.loopCycle = 120;
+                if (config.loopCycle < 15) config.loopCycle = 15;
                 if ((config.console_output == undefined) || (config.console_output == null)) config.console_output = false;
             }
         });
