@@ -6,6 +6,7 @@ Added:
 
 Fixed:
 - Updated config settings parameter handlers for new default allowance and to ensure a lesser chance of issues.
+- Updated error handlers in `miniget.js`.
 
 #### v1.1.6
 Fixed:
