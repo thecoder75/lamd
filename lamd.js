@@ -22,6 +22,7 @@ var     config = {
         account_index = 0,
         
         download_list = [],
+        errored_list = [],
         activeDownloads = 0,
         
         minuteTick = 0,
@@ -69,6 +70,37 @@ function main() {
                 if (config.console_output) {
                     process.stdout.write(accounts.length + " accounts loaded in.\n\n");
                 }
+
+            }
+        });
+    }
+
+
+    if (fs.existsSync('errored.json')) {
+        fs.readFile('errored.json', 'utf8', (err,data) => {
+            if (!err) {
+                errored_list = JSON.parse(data);
+
+                if (config.console_output) {
+                    process.stdout.write("Old errored list found, importing to add to it.\n\n");
+                }
+
+            }
+        });
+    }
+
+    if (fs.existsSync('queued.json')) {
+        fs.readFile('queued.json', 'utf8', (err,data) => {
+            if (!err) {
+                download_list = JSON.parse(data);
+
+                if (config.console_output) {
+                    process.stdout.write("Download queue file found, importing it.\n\n");
+                }
+
+                setTimeout(() => {
+                    downloadFile();
+                }, 1000);
 
             }
         });
@@ -293,6 +325,15 @@ function scanForNewReplays(i) {
             if (replays[ii].vtime - last_scanned > 0) {
                 if (config.console_output) process.stdout.write("UserID: " + userid + ", added replay " + replays[ii].vid + " to download queue.\n");
                 download_list.push(replays[ii].vid);
+
+                fs.writeFile(
+                    'queued.json', 
+                    JSON.stringify(download_list), 
+                    () => {
+                        // Queue file was written
+                    }
+                );
+
             }
         }
 
@@ -350,10 +391,28 @@ function downloadFile() {
                 */
             }, 
             on_complete: (e) => {
+                fs.writeFile(
+                    'queued.json', 
+                    JSON.stringify(download_list), 
+                    () => {
+                        // Queue file was written
+                    }
+                );
+
                 activeDownloads--;
                 setImmediate(() => { downloadFile(); });
             },
             on_error: (e) => {
+                errored_list.push(e.videoid);
+
+                fs.writeFile(
+                    'errored.json', 
+                    JSON.stringify(errored_list), 
+                    () => {
+                        // Queue file was written
+                    }
+                );
+
                 activeDownloads--;
                 setImmediate(() => { downloadFile(); });
             }
