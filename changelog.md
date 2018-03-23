@@ -1,5 +1,12 @@
 ## Change Log
 
+#### v1.1.7
+Added:
+- Added queued and errored list writing and reading so it'll resume previous download queue and log failed downloads.
+
+Fixed:
+- Updated config settings parameter handlers for new default allowance and to ensure a lesser chance of issues.
+
 #### v1.1.6
 Fixed:
 - Fixed bug where last scan time was not stored causing duplicate downloads to occur.
