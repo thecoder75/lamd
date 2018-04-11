@@ -13,10 +13,22 @@ This is a stand-alone application designed to run in the background and monitor 
 
 Downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
-#### Supported OS/Platforms
+### Supported OS/Platforms
 - Microsoft Windows 7 or higher (32-bit or 64-bit)
 - Ubuntu-based Linux and Debian Distributions (32-bit or 64-bit)
 - macOS 10.12 or higher (64-bit only)
+
+###FFMPEG Installation Notes
+***Please note that you must have FFMPEG already installed on your computer or located in the same place as LAMD for downloading to work.***
+
+#### Windows
+[Download](http://www.ffmpeg.org) and install FFMPEG into your `C:\Windows` folder.
+
+#### MacOS 
+[Download](http://www.ffmpeg.org) and install FFMPEG into a folder that is accessible in your path on your computer.  
+
+#### Linux
+You can either [download](http://www.ffmpeg.org) a static build or install the version maintained by your distribution using either `sudo apt install ffmpeg` or `sudo yum install ffmpeg`.
 
 * * *
 
