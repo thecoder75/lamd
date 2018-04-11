@@ -10,8 +10,6 @@ const   os = require('os'),
 
 var     config = {
             downloadPath: os.homedir() + '/Downloads',
-            downloadChunks: 5,
-            downloadConcurrent: 3,
             downloadTemplate: '%%replayid%%',
             loopCycle: 30,
             localPort: 8280,
@@ -32,10 +30,12 @@ var     config = {
 
 main();
 
+
+
 function main() {
 
     /*
-        Load configuration file
+            Load configuration file
     */
     if (fs.existsSync('config.json')) {
         fs.readFile('config.json', 'utf8', (err,data) => {
@@ -56,7 +56,7 @@ function main() {
 
 
     /*
-        Load Account List
+            Load Account List
     */
     if (fs.existsSync('accounts.json')) {
         fs.readFile('accounts.json', 'utf8', (err,data) => {
@@ -103,7 +103,7 @@ function main() {
     }
 
     /*
-        Replay Check Interval - Runs every minute
+            Replay Check Interval - Runs every minute
     */
     setInterval(() => {
         minuteTick++;
@@ -119,7 +119,7 @@ function main() {
 
     
     /*
-        Internal Web Server - Used for command interface
+            Internal Web Server - Used for command interface
     */
     http.createServer( (req, res) => {
 
@@ -263,7 +263,7 @@ function main() {
 
 
 /*
-    Account Scan Loop
+        Account Scan Loop
 */
 function accountScanLoop() {
 
@@ -279,7 +279,7 @@ function accountScanLoop() {
 }
 
 /*
-    Replay Scan
+        Replay Scan
 */
 function scanForNewReplays(i) {
 
@@ -309,12 +309,16 @@ function scanForNewReplays(i) {
             () => {}
         );
 
-
+        if (config.console_output) process.stdout.write("UserID: " + userid + "\n");
         for (ii = 0; ii < replays.length; ii++) {
-            if (replays[ii].vtime - last_scanned > 0) {
-                if (config.console_output) process.stdout.write("UserID: " + userid + ", added replay " + replays[ii].vid + " to download queue.\n");
-                download_list.push(replays[ii].vid);
 
+            // If we take the video time and subtract the last time we scanned and its
+            // greater than zero then its new and needs to be added
+            if ((replays[ii].vtime - last_scanned) > 0) {
+
+                if (config.console_output) process.stdout.write("\t" + replays[ii].vid + " added to queue.\n");
+                
+                download_list.push(replays[ii].vid);
                 fs.writeFile(
                     'queued.json', 
                     JSON.stringify(download_list), 
@@ -325,6 +329,11 @@ function scanForNewReplays(i) {
 
             }
         }
+
+        if (download_list.length > 0) 
+            setTimeout(() => {
+                downloadFile();
+            }, 250);
 
     });
 
@@ -338,18 +347,24 @@ function scanForNewReplays(i) {
 
 
 /*
-    Download Handler
+        
+        Download Handler
 
-    Checks first to see if there are any replays waiting to be downloaded
-    then checks to see if there's any concurrent slots open then gets the
-    info on the replay before sending to the stream download module.
 */
 function downloadFile() {
 
     if (downloadActive == true) return;
-
     if (download_list.length == 0) return;
-    downloadActive = true;
+
+
+    // Update current queue file
+    fs.writeFile(
+        'queued.json', 
+        JSON.stringify(download_list), 
+        () => {
+            // Queue file was written
+        }
+    );
 
     LiveMe.getVideoInfo(download_list[0]).then(video => {
 
@@ -368,10 +383,8 @@ function downloadFile() {
         filename = filename.replace(/([^a-z0-9\s]+)/gi, '-');
         filename = filename.replace(/[\u{0080}-\u{FFFF}]/gu, '');
 
-        filename += '.ts';
+        filename += '.mp4';
         
-
-
         ffmpeg(video.hlsvideosource)
             .outputOptions([
                 '-c copy',
@@ -388,26 +401,37 @@ function downloadFile() {
                 setTimeout(() => {
                     downloadFile();
                 }, 250);
+
             })
             .on('progress', function(progress) {
 
-                if (config.console_output) process.stdout.write(download_list[0] + " - " + (progress.percent.toFixed(1)) + "% downloaded     \r");
+                if (config.console_output) process.stdout.write(download_list[0] + " - " + (progress.percent.toFixed(0)) + "% downloaded     \r");
 
-                mainWindow.webContents.send('download-progress', {
-                    videoid: download_list[0],
-                    current: progress.percent,
-                    total: 100
-                });
             })
             .on('start', function(c) {
+                downloadActive = true;
             })
             .on('error', function(err, stdout, etderr) {
                 if (config.console_output) process.stdout.write(download_list[0] + " - errored     \n");
+
+                errored_list.push(download_list[0]);
                 download_list.shift();
                 download_active = false;
+
+                // Update errored file
+                fs.writeFile(
+                    'errored.json', 
+                    JSON.stringify(errored_list), 
+                    () => {
+                        // Queue file was written
+                    }
+                );
+
                 setTimeout(() => {
                     downloadFile();
-                }, 100);
+                }, 250);
+
+
             })
             .run();
 
