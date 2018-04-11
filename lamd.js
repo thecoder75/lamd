@@ -6,7 +6,7 @@ const   os = require('os'),
         fs = require('fs'),
         http = require('http'),
         LiveMe = require('liveme-api'),
-        m3u8stream = require('./modules/m3u8stream');               // We use a custom variation of this module
+        ffmpeg = require('fluent-ffmpeg');
 
 var     config = {
             downloadPath: os.homedir() + '/Downloads',
@@ -23,7 +23,7 @@ var     config = {
         
         download_list = [],
         errored_list = [],
-        activeDownloads = 0,
+        downloadActive = false,
         
         minuteTick = 0,
 
@@ -41,10 +41,6 @@ function main() {
         fs.readFile('config.json', 'utf8', (err,data) => {
             if (!err) {
                 config = JSON.parse(data);
-                if (config.downloadChunks < 1) config.downloadChunks = 1;
-                if (config.downloadChunks > 25) config.downloadChunks = 25;
-                if (config.downloadConcurrent > 5) config.downloadConcurrent = 5;
-                if (config.downloadConcurrent < 1) config.downloadConcurrent = 1;
                 if (config.loopCycle > 120) config.loopCycle = 120;
                 if (config.loopCycle < 15) config.loopCycle = 15;
                 if ((config.console_output == undefined) || (config.console_output == null)) config.console_output = false;
@@ -121,14 +117,7 @@ function main() {
         }
     }, 60000);
 
-    /*
-        Download Check Interval - Runs every second
-    */
-    setInterval(() => {
-        downloadFile();
-    }, 1000);
-
-
+    
     /*
         Internal Web Server - Used for command interface
     */
@@ -357,10 +346,10 @@ function scanForNewReplays(i) {
 */
 function downloadFile() {
 
-    if (download_list.length == 0) return;
-    if (activeDownloads >= config.downloadConcurrent ) return;
+    if (downloadActive == true) return;
 
-    activeDownloads++;
+    if (download_list.length == 0) return;
+    downloadActive = true;
 
     LiveMe.getVideoInfo(download_list[0]).then(video => {
 
@@ -380,43 +369,48 @@ function downloadFile() {
         filename = filename.replace(/[\u{0080}-\u{FFFF}]/gu, '');
 
         filename += '.ts';
-        download_list.shift();
+        
 
-        m3u8stream(video, {
-            chunkReadahead: config.downloadChunks,
-            on_progress: (e) => {
-                /*
-                    e.index = current chunk
-                    e.total = total chunks
-                */
-            }, 
-            on_complete: (e) => {
-                fs.writeFile(
-                    'queued.json', 
-                    JSON.stringify(download_list), 
-                    () => {
-                        // Queue file was written
-                    }
-                );
 
-                activeDownloads--;
-                setImmediate(() => { downloadFile(); });
-            },
-            on_error: (e) => {
-                errored_list.push(e.videoid);
+        ffmpeg(video.hlsvideosource)
+            .outputOptions([
+                '-c copy',
+                '-bsf:a aac_adtstoasc',
+                '-vsync 2',
+                '-movflags faststart'
+            ])
+            .output(config.downloadPath + '/' + filename)
+            .on('end', function(stdout, stderr) {
+                if (config.console_output) process.stdout.write(download_list[0] + " - downloaded successfully. \n");
 
-                fs.writeFile(
-                    'errored.json', 
-                    JSON.stringify(errored_list), 
-                    () => {
-                        // Queue file was written
-                    }
-                );
+                download_list.shift();
+                download_active = false;
+                setTimeout(() => {
+                    downloadFile();
+                }, 250);
+            })
+            .on('progress', function(progress) {
 
-                activeDownloads--;
-                setImmediate(() => { downloadFile(); });
-            }
-        }).pipe(fs.createWriteStream(config.downloadPath + '/' + filename));
+                if (config.console_output) process.stdout.write(download_list[0] + " - " + (progress.percent.toFixed(1)) + "% downloaded     \r");
+
+                mainWindow.webContents.send('download-progress', {
+                    videoid: download_list[0],
+                    current: progress.percent,
+                    total: 100
+                });
+            })
+            .on('start', function(c) {
+            })
+            .on('error', function(err, stdout, etderr) {
+                if (config.console_output) process.stdout.write(download_list[0] + " - errored     \n");
+                download_list.shift();
+                download_active = false;
+                setTimeout(() => {
+                    downloadFile();
+                }, 100);
+            })
+            .run();
+
     });
 
 }
