@@ -71,20 +71,6 @@ function main() {
         });
     }
 
-
-    if (fs.existsSync('errored.json')) {
-        fs.readFile('errored.json', 'utf8', (err,data) => {
-            if (!err) {
-                errored_list = JSON.parse(data);
-
-                if (config.console_output) {
-                    process.stdout.write("Old errored list found, importing to add to it.\n\n");
-                }
-
-            }
-        });
-    }
-
     if (fs.existsSync('queued.json')) {
         fs.readFile('queued.json', 'utf8', (err,data) => {
             if (!err) {
@@ -102,6 +88,7 @@ function main() {
         });
     }
 
+
     /*
             Replay Check Interval - Runs every minute
     */
@@ -116,6 +103,11 @@ function main() {
             });
         }
     }, 60000);
+    setTimeout(() => {
+        account_index = 0;
+        if (config.console_output) process.stdout.write("Beginning account scan for new replays.\n");
+        accountScanLoop();
+    }, 2000);
 
     
     /*
@@ -226,7 +218,6 @@ function main() {
 
 
             case 'ping':
-                if (config.console_output) process.stdout.write("PING.\n");
                 response.message = 'Pong';
                 response.code = 200;
                 break;
@@ -293,21 +284,18 @@ function scanForNewReplays(i) {
         var ii = 0, 
             count = 0, 
             userid = replays[0].userid,
-            last_scanned = null,
+            last_scanned = 0,
             dt = Math.floor((new Date()).getTime() / 1000);
 
-        for (ii = 0; ii < accounts.length; ii++) {
-            if (accounts[ii] == userid) {
-                last_scanned = accounts[ii].scanned;
-                accounts[ii].scanned = dt;
-            }
-        }
-
+        last_scanned = accounts[i].scanned - 86400;
+        accounts[i].scanned = dt;
+        
         fs.writeFile(
             'accounts.json', 
             JSON.stringify(accounts), 
             () => {}
         );
+        
 
         if (config.console_output) process.stdout.write("UserID: " + userid + "\n");
         for (ii = 0; ii < replays.length; ii++) {
@@ -316,24 +304,28 @@ function scanForNewReplays(i) {
             // greater than zero then its new and needs to be added
             if ((replays[ii].vtime - last_scanned) > 0) {
 
-                if (config.console_output) process.stdout.write("\t" + replays[ii].vid + " added to queue.\n");
-                
-                download_list.push(replays[ii].vid);
-                fs.writeFile(
-                    'queued.json', 
-                    JSON.stringify(download_list), 
-                    () => {
-                        // Queue file was written
-                    }
-                );
+                var add_replay = true;
+                for (var j = 0; j < download_list.length; j++) {
+                    if (download_list[j] == replays[ii].vid) add_replay = false;
+                }
+                if (add_replay == true) {
+                    if (config.console_output) process.stdout.write("\t" + replays[ii].vid + " added to queue.\n");
+                    download_list.push(replays[ii].vid);
+                    fs.writeFile(
+                        'queued.json', 
+                        JSON.stringify(download_list), 
+                        () => {
+                            // Queue file was written
+                        }
+                    );
+                    setTimeout(()=>{
+                        downloadFile();
+                    }, 1000);
+                } else
+                    if (config.console_output) process.stdout.write("\t" + replays[ii].vid + " already in queue.\n");
 
             }
         }
-
-        if (download_list.length > 0) 
-            setTimeout(() => {
-                downloadFile();
-            }, 250);
 
     });
 
@@ -405,14 +397,14 @@ function downloadFile() {
             })
             .on('progress', function(progress) {
 
-                if (config.console_output) process.stdout.write(download_list[0] + " - " + (progress.percent.toFixed(0)) + "% downloaded     \r");
+                if (config.console_output) process.stdout.write("Replay ID: " + download_list[0] + " - " + progress.percent.toFixed(2) + "% completed     \r");
 
             })
             .on('start', function(c) {
                 downloadActive = true;
             })
-            .on('error', function(err, stdout, etderr) {
-                if (config.console_output) process.stdout.write(download_list[0] + " - errored     \n");
+            .on('error', function(err, stdout, exterr) {
+                if (config.console_output) process.stdout.write(download_list[0] + " - errored (Details: "+err+")     \n");
 
                 errored_list.push(download_list[0]);
                 download_list.shift();
@@ -421,9 +413,9 @@ function downloadFile() {
                 // Update errored file
                 fs.writeFile(
                     'errored.json', 
-                    JSON.stringify(errored_list), 
+                    errored_list.join("\n"),
                     () => {
-                        // Queue file was written
+                        // Errored file was written
                     }
                 );
 
