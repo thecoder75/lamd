@@ -1,5 +1,16 @@
 ## Change Log
 
+#### v1.2.1
+Added:
+- Changed format of error log.
+
+Fixed:
+- Tweaked FFMPEG settings and functions.
+
+#### v1.2.0
+Added:
+- Added support to use FFMPEG instead of old stream downloader.
+
 #### v1.1.7
 Added:
 - Added queued and errored list writing and reading so it'll resume previous download queue and log failed downloads.
