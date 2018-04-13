@@ -18,8 +18,12 @@ Downloads can be found on the [releases](https://github.com/thecoder75/lamd/rele
 - Ubuntu-based Linux and Debian Distributions (32-bit or 64-bit)
 - macOS 10.12 or higher (64-bit only)
 
-###FFMPEG Installation Notes
+
+
+###Using either internal downloader or FFMPEG Installation Notes
 ***Please note that you must have FFMPEG already installed on your computer or located in the same place as LAMD for downloading to work.***
+
+You can now specify whether you want to use FFMPEG for downloading or the older (and faster) stream downloader.  
 
 #### Windows
 [Download](http://www.ffmpeg.org) and install FFMPEG into your `C:\Windows` folder.
@@ -33,7 +37,53 @@ You can either [download](http://www.ffmpeg.org) a static build or install the v
 * * *
 
 ## Configuration
-When you first run it, it will create a local `config.json` file which will hold the basic operating configuration.  Information on monitored accounts will be stored in the `accounts.json` file.
+The app will use internal defaults if no `config.json` file is found.  To write out the default `config.json` file, you can start the program with the `--writecfg` parameter.  Information on monitored accounts will be stored in the `accounts.json` file.
+
+### Example `config.json` file
+```javascript
+{
+  "downloaderFFMPEG": false,
+  "downloadPath": "/home/user/Downloads",
+  "downloadChunks": 25,
+  "downloadTemplate": "%%replayid%%",
+  "loopCycle": 15,
+  "localPort": 8280,
+  "console_output": true
+}
+```
+
+#### downloaderFFMPEG
+Set to true to use FFMPEG for downloading, false to use the internal stream downloader.  Default is `true`.
+
+#### downloadPath
+Set to where you want the downloaded replays stored.  Default is the current users's Downloads folder.
+
+#### downloadChunks
+Only used when using the internal downloader, specifies how many chunks or segments to download at a time.  Valid range is 2 to 250, default is `10`.
+
+#### downloadTemplate
+Specifies how you want the replay files named.  Default is `%%replayid%%`.
+
+| Tag                   | Description                                                        |
+| --------------------- | ------------------------------------------------------------------ |
+| `%%broadcaster%%`     | Broadcaster's Nickname                                             |
+| `%%longid%%`          | Broadcaster's Long User ID Number                                  |
+| `%%replayid%%`        | Video ID of the replay                                             |
+| `%%replayviews%%`     | Number of views                                                    |
+| `%%replaylikes%%`     | Number of likes                                                    |
+| `%%replayshares%%`    | Number of shares                                                   |
+| `%%replaytitle%%`     | Title of the replay (**WARNING:** Most replays have no title!)     |
+| `%%replayduration%%`  | Duration of the replay in HH:MM:SS                                 |
+
+#### loopCycle
+How many minutes between new replay scans.  Valid range is 15 to 360, default is `30`.
+
+#### localPort
+Local port to listen for connections on.  Default is `8280`.
+
+#### console_output
+Whether to enable or disable the pretty console output.  Default is `true`.
+
 
 * * *
 
