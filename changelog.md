@@ -1,5 +1,16 @@
 ## Change Log
 
+#### v1.3.0
+Added:
+- Changed console output to now be more useful in what is said.
+- Added color to console output.
+- Added ability to now use either the older stream downloader or FFMPEG for downloading.
+- Added command line option `--writecfg` to write out a default configuration file.
+
+Fixed:
+- Changed how downloads are triggered after completion to eliminate only one getting fetched.
+- Downloads stop after only one download.
+
 #### v1.2.1
 Added:
 - Changed format of error log.
