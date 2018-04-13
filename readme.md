@@ -20,7 +20,7 @@ Downloads can be found on the [releases](https://github.com/thecoder75/lamd/rele
 
 
 
-###Using either internal downloader or FFMPEG Installation Notes
+### Using either internal downloader or FFMPEG Installation Notes
 ***Please note that you must have FFMPEG already installed on your computer or located in the same place as LAMD for downloading to work.***
 
 You can now specify whether you want to use FFMPEG for downloading or the older (and faster) stream downloader.  
