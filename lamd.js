@@ -137,7 +137,7 @@ function main() {
     setTimeout(() => {
         account_index = 0;
         accountScanLoop();
-    }, 5
+    }, 5);
 
     
     /*
