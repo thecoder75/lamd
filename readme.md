@@ -74,6 +74,9 @@ Specifies how you want the replay files named.  Default is `%%replayid%%`.
 | `%%replayshares%%`    | Number of shares                                                   |
 | `%%replaytitle%%`     | Title of the replay (**WARNING:** Most replays have no title!)     |
 | `%%replayduration%%`  | Duration of the replay in HH:MM:SS                                 |
+| `%%replaydatepacked%%`| Date the replay was originally recorded in YYYYMMDD format         |
+| `%%replaydateus%%`    | Date the replay was originally recorded in MM-DD-YYYY format       |
+| `%%replaydateeu%%`    | Date the replay was originally recorded in DD-MM-YYYY format       |
 
 #### loopCycle
 How many minutes between new replay scans.  Valid range is 15 to 360, default is `30`.

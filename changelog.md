@@ -1,5 +1,9 @@
 ## Change Log
 
+#### v1.3.1
+Added:
+- Added new filename template tags for adding the date of the replay to the filename.
+
 #### v1.3.0
 Added:
 - Changed console output to now be more useful in what is said.
