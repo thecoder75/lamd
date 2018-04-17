@@ -383,15 +383,20 @@ function downloadFile() {
 
     LiveMe.getVideoInfo(download_list[0]).then(video => {
 
-        var filename = config.downloadTemplate
-                .replace(/%%broadcaster%%/g, video.uname)
-                .replace(/%%longid%%/g, video.userid)
-                .replace(/%%replayid%%/g, video.vid)
-                .replace(/%%replayviews%%/g, video.playnumber)
-                .replace(/%%replaylikes%%/g, video.likenum)
-                .replace(/%%replayshares%%/g, video.sharenum)
-                .replace(/%%replaytitle%%/g, video.title ? video.title : 'untitled')
-                .replace(/%%replayduration%%/g, video.videolength);            
+        var dt = new Date(video.vtime * 1000), mm = dt.getMonth() + 1, dd = getDate(), filename = '';
+
+        filename = config.downloadTemplate
+            .replace(/%%broadcaster%%/g, video.uname)
+            .replace(/%%longid%%/g, video.userid)
+            .replace(/%%replayid%%/g, video.vid)
+            .replace(/%%replayviews%%/g, video.playnumber)
+            .replace(/%%replaylikes%%/g, video.likenum)
+            .replace(/%%replayshares%%/g, video.sharenum)
+            .replace(/%%replaytitle%%/g, video.title ? video.title : 'untitled')
+            .replace(/%%replayduration%%/g, video.videolength)
+            .replace(/%%replaydatepacked%%/g, (dt.getFullYear() + (mm < 10 ? '0' : '') + mm + (dd < 10 ? '0' : '') + dd))
+            .replace(/%%replaydateus%%/g, ((mm < 10 ? '0' : '') + mm + '-' + (dd < 10 ? '0' : '') + dd + '-' + dt.getFullYear()))
+            .replace(/%%replaydateeu%%/g, ((dd < 10 ? '0' : '') + dd + '-' + (mm < 10 ? '0' : '') + mm + '-' + dt.getFullYear()));
 
         // Cleanup any illegal characters in the filename
         filename = filename.replace(/[/\\?%*:|"<>]/g, '-');
