@@ -383,7 +383,7 @@ function downloadFile() {
 
     LiveMe.getVideoInfo(download_list[0]).then(video => {
 
-        var dt = new Date(video.vtime * 1000), mm = dt.getMonth() + 1, dd = getDate(), filename = '';
+        var dt = new Date(video.vtime * 1000), mm = dt.getMonth() + 1, dd = dt.getDate(), filename = '';
 
         filename = config.downloadTemplate
             .replace(/%%broadcaster%%/g, video.uname)
