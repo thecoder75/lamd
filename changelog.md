@@ -1,5 +1,9 @@
 ## Change Log
 
+#### v1.3.2
+Fixed:
+- Fixed bug in download function.
+
 #### v1.3.1
 Added:
 - Added new filename template tags for adding the date of the replay to the filename.
