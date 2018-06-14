@@ -4,6 +4,9 @@
 ![All Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/total.svg?style=flat-square&label=All+Releases+Downloaded)
 ![Latest Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/latest/total.svg?style=flat-square&label=Latest+Release+Downloaded)
 
+## **Lewdninja is now actively maintaining this, go to his repo for updates:  https://github.com/Lewdninja/lamd**
+
+
 ## What Is LiveMe Account Monitor Daemon?
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
