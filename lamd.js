@@ -32,7 +32,7 @@ function main() {
             minuteTicks = 0;
 
             if (isOnline) {
-
+                beginBookmarkScan()
             }
         }
     }, 60000)
@@ -41,257 +41,61 @@ function main() {
     if (process.platform == 'win32')
         op = process.env.APPDATA
     else if (process.platform == 'darwin')
-        op = process.env.HOME + 'Library/Preferences'
+        op = process.env.HOME + '/Library/Preferences'
     else
-        op = process.env.HOME + '.config'
+        op = process.env.HOME + '/.config'
+
+    op += '/LiveMe Pro Tools'
 
     if (fs.existsSync(path.join(op, 'Settings'))) {
         // Configuration file was found
         process.stdout.write('LiveMe Pro Tools settings file found, reading...\n')
         appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
-
-        console.log(JSON.stringify(appSettings, NULL, 2))
-
     }
 
-    return;
+    if (fs.existsSync(path.join(op, 'Settings'))) {
+        // Configuration file was found
+        process.stdout.write('LiveMe Pro Tools bookmarks file found, reading...\n')
 
-    
-    if (fs.existsSync('config.json')) {
-        fs.readFile('config.json', 'utf8', (err,data) => {
-            if (!err) {
-                config = JSON.parse(data);
+        if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
+            fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
+                if (err) {
+                    bookmarks = []
+                } else {
+                    bookmarks = JSON.parse(data)
+                    if (bookmarks.length == 0) return
 
-                // These options only come int play when using the stream downloader and not FFMPEG
-                if ((config.downloaderFFMPEG == undefined) || (config.downloaderFFMPEG == null)) config.downloaderFFMPEG = true;
-                if (config.downloadChunks < 2) config.downloadChunks = 2;
-                if (config.downloadChunks > 250) config.downloadChunks = 250;
+                    process.stdout.write('\tLoaded ' + bookmarks.length + ' bookmarks into memory.\n')
+                    setTimeout(() => {
+                        beginBookmarkScan()
+                    }, 15000)
 
-                if (config.loopCycle > 360) config.loopCycle = 360;
-                if (config.loopCycle < 15) config.loopCycle = 15;
-
-                if ((config.console_output == undefined) || (config.console_output == null)) config.console_output = false;
-            }
-
-
-            if (config.console_output) {
-                process.stdout.write("\x1b[1;34mLiveMe Account Monitor Daemon (LAMD)\n\x1b[0;34mhttps://thecoderstoolbox.com/lamd\n");
-                process.stdout.write("\x1b[1;30m------------------------------------------------------------------------------\n");
-                process.stdout.write("\x1b[1;32m     Scan Interval:      \x1b[1;36m" + config.loopCycle + " \x1b[1;32mminutes\n\n");
-
-                process.stdout.write("\x1b[1;32m     Download Path:      \x1b[1;36m" + config.downloadPath + "\n");
-                process.stdout.write("\x1b[1;32m     Download Template:  \x1b[1;36m" + config.downloadTemplate + "\n\n");
-                process.stdout.write("\x1b[1;32m     Download Engine:    \x1b[1;36m" + (config.downloaderFFMPEG ? 'FFMPEG' : 'Stream Downloader') + "\n");
-                if (config.downloaderFFMPEG == false) {
-                    process.stdout.write("\x1b[1;32m     Download Chunks:    \x1b[1;36m" + config.downloadChunks + "\x1b[1;32m at a time\n");    
                 }
-                process.stdout.write("\x1b[1;30m------------------------------------------------------------------------------\n");
-                process.stdout.write("\x1b[0;37m");
-            }
-
-
-        });
-    }
-
-    for (var i = 0; i < process.argv.length; i++) {
-        if (process.argv[i] == '--writecfg') {
-            fs.writeFile(
-                'config.json', 
-                JSON.stringify(config, null, 2), 
-                () => {}
-            );            
+            })
         }
+
     }
 
-    /*
-            Load Account List
-    */
-    if (fs.existsSync('accounts.json')) {
-        fs.readFile('accounts.json', 'utf8', (err,data) => {
-            if (!err) {
-                accounts = JSON.parse(data);
 
-                if (config.console_output) {
-                    process.stdout.write("\x1b[1;33m" + accounts.length + " \x1b[1;34maccounts loaded in.\n");
-                }
 
-            }
-        });
-    }
-
+    // Not sure if I'll keep this feature/function anymore
     if (fs.existsSync('queued.json')) {
         fs.readFile('queued.json', 'utf8', (err,data) => {
             if (!err) {
-                download_list = JSON.parse(data);
+                download_list = JSON.parse(data)
 
                 if (download_list.length > 0) {
-                    if (config.console_output) process.stdout.write("\x1b[1;33mResuming existing download queue...\n");
+                    if (config.console_output) process.stdout.write("\x1b[1;33mResuming existing download queue...\n")
                 
                     setTimeout(() => {
-                        downloadFile();
-                    }, 5000);
+                        downloadFile()
+                    }, 5000)
                 }
             }
-        });
+        })
     }
 
-
-
-    /*
-            Replay Check Interval - Runs every minute
-    */
-    setInterval(() => {
-        minuteTick++;
-        if (minuteTick == config.loopCycle) {
-            minuteTick = 0;
-            setImmediate(() => { 
-                account_index = 0;
-                accountScanLoop();
-            });
-        }
-    }, 60000);
-
-    setTimeout(() => {
-        account_index = 0;
-        accountScanLoop();
-    }, 5);
-
     
-    /*
-            Internal Web Server - Used for command interface
-    */
-    http.createServer( (req, res) => {
-
-        var chunks = req.url.substr(1).split('/'),
-            response = {
-                api_version: APIVERSION,
-                code: 500,
-                message: '',
-                data: null
-            }
-
-
-        switch (chunks[0]) {
-
-            case 'add-user':
-            case 'add-account':
-                var add_this = true, i = 0, isnum = /^\d+$/.test(chunks[1]);
-
-                for (i = 0; i < accounts.length; i++) {
-                    if (accounts[i].userid == chunks[1]) { add_this = false; }
-                }
-
-                if (add_this && isnum) {
-                    accounts.push({
-                        userid: chunks[1],
-                        scanned: Math.floor((new Date()).getTime() / 1000)
-                    });
-
-                    fs.writeFile(
-                        'accounts.json', 
-                        JSON.stringify(accounts), 
-                        () => {}
-                    );
-
-                    response.message = 'Account added.';
-                    response.code = 200;
-                    if (config.console_output) process.stdout.write("\x1b1;36mAdded \x1b[1;33m" + chunks[1] + " \x1b[1;36mfor monitoring.\n");
-                } else {
-                    response.message = 'Account already in list.';
-                    response.code = 302;
-                    if (config.console_output) process.stdout.write("\x1b[1;31mAccount \x1b[1;33m" + chunks[1] + " \x1b[1;31malready in database.\n");
-                }
-                break;
-
-
-            case 'check-user':
-            case 'check-account':
-                var is_present = false;
-
-                for (var i = 0; i < accounts.length; i++) {
-                    if (accounts[i].userid == chunks[1]) { is_present = true; }
-                }
-
-                response.message = is_present ? 'Account is in the list.' : 'Account not found in the list.';
-                response.data = [];
-                response.code = is_present ? 200 : 404;
-                break;
-
-
-            case 'remove-user':
-            case 'remove-account':
-                response.message = 'Account not in the list.';
-                response.code = 404;
-
-                for (var i = 0; i < accounts.length; i++) {
-                    if (accounts[i].userid == chunks[1]) {
-                        accounts.splice(i, 1);
-                        response.message = 'Account removed.';
-                        response.code = 200;
-                        if (config.console_output) process.stdout.write("\x1b[1;36mAccount \x1b[1;33m" + chunks[1] + " \x1b[1;36mremoved from list.\n");
-                    }
-                }
-
-                fs.writeFile(
-                    'accounts.json', 
-                    JSON.stringify(accounts), 
-                    () => {}
-                );
-                break;
-
-
-            case 'list-users':
-            case 'list-accounts':
-                response.message = 'Accounts in list';
-                response.code = 200;
-                response.data = [];
-                for (var i = 0; i < accounts.length; i++) {
-                    response.data.push(accounts[i].userid);
-                }
-                break;
-
-
-            case 'add-replay':
-            case 'add-download':
-                response.message = 'Replay added to queue.';
-                response.code = 200;
-                response.data = [];
-                var isnum = /^\d+$/.test(chunks[1]);
-                if (isnum) {
-                    if (config.console_output) process.stdout.write("\x1b[1;36mReplay \x1b[1;33m" + chunks[1] + " \x1b[1;36m- added to queue.  \r");
-                    download_list.push(chunks[1]);
-                    downloadFile();
-                }
-                break;
-
-
-            case 'ping':
-                response.message = 'Pong';
-                response.code = 200;
-                break;
-
-
-            case 'shutdown':
-                if (config.console_output) process.stdout.write("\x1b[1;31mShutting down and storing information...\n");
-
-                setTimeout(() => {
-                    process.exit(0);    
-                }, 250);
-                
-                break;
-
-
-            default:
-                response.message = 'Invalid command.';
-                break;
-
-        }
-
-        res.writeHead(200, { 'Content-Type': 'text/javascript'});
-        res.write(JSON.stringify(response, null, 2));
-        res.end();
-
-    }).listen(config.localPort);   
 }
 
 
@@ -302,19 +106,22 @@ function main() {
 
 
 /*
-        Account Scan Loop
+        Bookmark Scan Loop
 */
-function accountScanLoop() {
+function beginBookmarkScan() {
 
-    if (account_index < accounts.length) {
+    if (bookmark_index < bookmarks.length) {
         setTimeout(() => {
-            accountScanLoop();
-        }, 250);
+            beginBookmarkScan()
+        }, 50)
     }
 
     setImmediate(function(){
-        if (account_index < accounts.length) { account_index++; scanForNewReplays(account_index); }
-    });
+        if (bookmark_index < bookmarks.length) { 
+            bookmark_index++
+            scanForNewReplays(bookmark_index)
+        }
+    })
 }
 
 /*
@@ -322,9 +129,9 @@ function accountScanLoop() {
 */
 function scanForNewReplays(i) {
 
-    if (accounts[i] == undefined) return;
+    if (bookmarks[i] == undefined) return;
 
-    LiveMe.getUserReplays(accounts[i].userid, 1, 10).then(replays => {
+    LiveMe.getUserReplays(bookmarks[i].userid, 1, 10).then(replays => {
 
         if (replays == undefined) return;
         if (replays.length < 1) return;
