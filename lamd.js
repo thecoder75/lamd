@@ -1,45 +1,63 @@
 /*
-    LiveMe Monitor CLI
+
+    LiveMe Account Monitor Daemon v2.0
+
 */
 
-const   os = require('os'),
-        fs = require('fs'),
-        http = require('http'),
-        LiveMe = require('liveme-api'),
-        ffmpeg = require('fluent-ffmpeg'),
-        m3u8stream = require('./modules/m3u8stream'); 
+const os = require(os)
+const platform = require(platform)
+const fs = require(fs)
+const path = require('path')
+const request = require('request')
+const LivemeAPI = require('./livemeapi')
+const LiveMe = new LivemeAPI({})
+const isDev = require('electron-is-dev')
+const ffmpeg = require('fluent-ffmpeg')
+const async = require('async')
 
-var     config = {
-            downloaderFFMPEG: true,
-            downloadPath: os.homedir() + '/Downloads',
-            downloadChunks: 10,
-            downloadTemplate: '%%replayid%%',
-            loopCycle: 30,
-            localPort: 8280,
-            console_output: true
-        },
-        
-        accounts = [],
-        account_index = 0,
-        
-        download_list = [],
-        errored_list = [],
-        downloadActive = false,
-        
-        minuteTick = 0,
-
-        APIVERSION = '1.1';
-
+let bookmarks = []
+let bookmark_index = 0
+let download_list = []
+let minuteTicks = 0
+let appSettings = {}
+let isOnline = false
 
 main();
 
-
-
 function main() {
 
-    /*
-            Load configuration file
-    */
+    setInterval(() => {
+        minuteTicks++;
+        if (minuteTicks > 29) {
+            // We begin a scan process
+            minuteTicks = 0;
+
+            if (isOnline) {
+
+            }
+        }
+    }, 60000)
+
+    let op = ''
+    if (process.platform == 'win32')
+        op = process.env.APPDATA
+    else if (process.platform == 'darwin')
+        op = process.env.HOME + 'Library/Preferences'
+    else
+        op = process.env.HOME + '.config'
+
+    if (fs.existsSync(path.join(op, 'Settings'))) {
+        // Configuration file was found
+        process.stdout.write('LiveMe Pro Tools settings file found, reading...\n')
+        appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
+
+        console.log(JSON.stringify(appSettings, NULL, 2))
+
+    }
+
+    return;
+
+    
     if (fs.existsSync('config.json')) {
         fs.readFile('config.json', 'utf8', (err,data) => {
             if (!err) {
