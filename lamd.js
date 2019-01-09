@@ -14,6 +14,7 @@ const LiveMe = new LivemeAPI({})
 const ffmpeg = require('fluent-ffmpeg')
 const async = require('async')
 
+let op = ''
 let bookmarks = []
 let bookmark_index = 0
 let download_list = []
@@ -37,7 +38,7 @@ function main() {
         }
     }, 60000)
 
-    let op = ''
+    op = ''
     if (process.platform == 'win32')
         op = process.env.APPDATA
     else if (process.platform == 'darwin')
@@ -53,27 +54,14 @@ function main() {
         appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
     }
 
-    if (fs.existsSync(path.join(op, 'Settings'))) {
+    if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
         // Configuration file was found
         process.stdout.write('LiveMe Pro Tools bookmarks file found, reading...\n')
 
-        if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-            fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
-                if (err) {
-                    bookmarks = []
-                } else {
-                    bookmarks = JSON.parse(data)
-                    if (bookmarks.length == 0) return
-
-                    process.stdout.write('\tLoaded ' + bookmarks.length + ' bookmarks into memory.\n')
-                    setTimeout(() => {
-                        beginBookmarkScan()
-                    }, 15000)
-
-                }
-            })
-        }
-
+        loadBookmarks()
+        fs.watch(path.join(op, 'bookmarks.json'), () => {
+            loadBookmarks()
+        })
     }
 
 
@@ -98,7 +86,29 @@ function main() {
     
 }
 
+function loadBookmarks() {
+    if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
+        // Configuration file was found
+        process.stdout.write('LiveMe Pro Tools bookmarks file loaded.\n')
 
+        if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
+            fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
+                if (err) {
+                    bookmarks = []
+                } else {
+                    bookmarks = JSON.parse(data)
+                    if (bookmarks.length == 0) return
+
+                    bookmark_index = 0;
+
+                    process.stdout.write('\tRead in ' + bookmarks.length + ' bookmarks into memory.\n')
+
+                }
+            })
+        }
+
+    }    
+}
 
 
 
@@ -110,18 +120,17 @@ function main() {
 */
 function beginBookmarkScan() {
 
-    if (bookmark_index < bookmarks.length) {
-        setTimeout(() => {
-            beginBookmarkScan()
-        }, 50)
-    }
-
-    setImmediate(function(){
-        if (bookmark_index < bookmarks.length) { 
-            bookmark_index++
+    setTimeout(() => {
+        if (bookmarks[bookmark_index].lamd.monitor == true) {
             scanForNewReplays(bookmark_index)
         }
-    })
+
+        bookmark_index++
+        if (bookmark_index > bookmarks.length) bookmark_index = 0
+
+        beginBookmarkScan()
+    }, 50)
+
 }
 
 /*
@@ -129,30 +138,32 @@ function beginBookmarkScan() {
 */
 function scanForNewReplays(i) {
 
-    if (bookmarks[i] == undefined) return;
+    if (bookmarks[i] == undefined) return
 
-    LiveMe.getUserReplays(bookmarks[i].userid, 1, 10).then(replays => {
+    LiveMe.getUserReplays(bookmarks[i].uid, 1, 10).then(replays => {
 
-        if (replays == undefined) return;
-        if (replays.length < 1) return;
+        if (replays == undefined) return
+        if (replays.length < 1) return
 
-        var ii = 0, 
-            count = 0, 
-            userid = replays[0].userid,
-            last_scanned = 0,
-            dt = Math.floor((new Date()).getTime() / 1000);
+        let ii = 0
+        let count = 0
+        let userid = replays[0].userid
+        let last_scanned = 0
+        let dt = Math.floor((new Date()).getTime() / 1000)
 
-        last_scanned = accounts[i].scanned;
-        accounts[i].scanned = dt;
+        last_scanned = bookmarks[i].lamd.last_checked
+        bookmarks[i].scanned = dt
         
         fs.writeFile(
-            'accounts.json', 
-            JSON.stringify(accounts), 
-            () => {}
+            path.join(op, 'bookmarks.json'),
+            JSON.stringify(bookmarks), 
+            () => {
+
+            }
         );
         
 
-        var replay_count = 0;
+        var replay_count = 0
         for (ii = 0; ii < replays.length; ii++) {
 
             // If we take the video time and subtract the last time we scanned and its
@@ -161,18 +172,12 @@ function scanForNewReplays(i) {
 
                 var add_replay = true;
                 for (var j = 0; j < download_list.length; j++) {
-                    if (download_list[j] == replays[ii].vid) add_replay = false;
+                    if (download_list[j] == replays[ii].vid) add_replay = false
                 }
                 if (add_replay == true) {
-                    replay_count++;
-                    download_list.push(replays[ii].vid);
-                    fs.writeFile(
-                        'queued.json', 
-                        JSON.stringify(download_list), 
-                        () => {
-                            // Queue file was written
-                        }
-                    );
+                    replay_count++
+                    download_list.push(replays[ii].vid)
+                    fs.writeFileSync('queued.json', JSON.stringify(download_list))
                 }
             }
         }
