@@ -4,8 +4,10 @@
 
 ### L.A.M.D. will be receiving a major rewrite/update here soon with a new release shortly after.
 
-## What Is LiveMe Account Monitor Daemon?
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
+
+### Important Update!!!
+**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools for configuration and monitored account list.  Be sure to have LiveMe Pro Tools installed and configured before using LAMD!**
 
 * * *
 
@@ -13,8 +15,6 @@ This is a stand-alone application designed to run in the background and monitor 
 - Microsoft Windows 7 or higher (64-bit only)
 - Ubuntu-based Linux and Debian Distributions (64-bit only)
 - macOS 10.11 or higher (64-bit only)
-
-* * *
 
 ## Downloads
 
@@ -27,7 +27,7 @@ Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/
 * * *
 
 ## Configuration
-LAMD will now use/access LiveMe Pro Tools configuration settings and use the same settings for its downloads and function handling. 
+LAMD will now use/access LiveMe Pro Tools (v1.250.xxxxxxxx or higher) configuration settings and use the same settings for its downloads and function handling. 
 
 * * *
 
