@@ -62,6 +62,10 @@ function main() {
         fs.watch(path.join(op, 'bookmarks.json'), () => {
             loadBookmarks()
         })
+
+        setTimeout(() => {
+            beginBookmarkScan()
+        }, 15000)
     }
 
 
