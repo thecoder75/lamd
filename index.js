@@ -62,7 +62,10 @@ function main() {
         loadBookmarks()
         fs.watch(path.join(op, 'bookmarks.json'), () => {
             if (bookmarks_loading) return;
+
             process.stdout.write('LiveMe Pro Tools bookmarks file was updated, reading updated one into memory...\n')
+            bookmarks_loading = true;
+
             loadBookmarks()
         })
 
@@ -95,8 +98,6 @@ function main() {
 function loadBookmarks() {
     if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
         // Configuration file was found
-
-        if (bookmarks_loading) return;
 
         if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
             setTimeout(()=>{
