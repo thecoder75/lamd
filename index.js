@@ -60,6 +60,7 @@ function main() {
 
         loadBookmarks()
         fs.watch(path.join(op, 'bookmarks.json'), () => {
+            process.stdout.write('LiveMe Pro Tools bookmarks file was updated, reading updated one into memory...\n')
             loadBookmarks()
         })
 
