@@ -4,14 +4,13 @@
 
 */
 
-const os = require(os)
-const platform = require(platform)
-const fs = require(fs)
+const os = require('os')
+const platform = require('platform')
+const fs = require('fs')
 const path = require('path')
 const request = require('request')
 const LivemeAPI = require('./livemeapi')
 const LiveMe = new LivemeAPI({})
-const isDev = require('electron-is-dev')
 const ffmpeg = require('fluent-ffmpeg')
 const async = require('async')
 
