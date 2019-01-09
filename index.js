@@ -66,9 +66,8 @@ function main() {
 
         setTimeout(() => {
             beginBookmarkScan()
-        }, 15000)
+        }, 5000)
     }
-
 
 
     // Not sure if I'll keep this feature/function anymore
@@ -125,16 +124,19 @@ function loadBookmarks() {
 */
 function beginBookmarkScan() {
 
-    setTimeout(() => {
+    if (bookmarks[bookmark_index].lamd != undefined) {
         if (bookmarks[bookmark_index].lamd.monitor == true) {
             scanForNewReplays(bookmark_index)
         }
+    }
+    if (bookmark_index < bookmarks.length) {
+        setTimeout(() => {
+            beginBookmarkScan()
+        }, 50)
+    }
 
-        bookmark_index++
-        if (bookmark_index > bookmarks.length) bookmark_index = 0
-
-        beginBookmarkScan()
-    }, 50)
+    bookmark_index++
+    if (bookmark_index >= bookmarks.length) bookmark_index = 0
 
 }
 
