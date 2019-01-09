@@ -96,19 +96,21 @@ function loadBookmarks() {
         process.stdout.write('LiveMe Pro Tools bookmarks file loaded.\n')
 
         if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-            fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
-                if (err) {
-                    bookmarks = []
-                } else {
-                    bookmarks = JSON.parse(data)
-                    if (bookmarks.length == 0) return
-
-                    bookmark_index = 0;
-
-                    process.stdout.write('\tRead in ' + bookmarks.length + ' bookmarks into memory.\n')
-
-                }
-            })
+            setTimeout(()=>{
+                fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
+                    if (err) {
+                        bookmarks = []
+                    } else {
+                        bookmarks = JSON.parse(data)
+                        if (bookmarks.length == 0) return
+    
+                        bookmark_index = 0;
+    
+                        process.stdout.write('\tRead in ' + bookmarks.length + ' bookmarks into memory.\n')
+    
+                    }
+                })
+            }, 5000)
         }
 
     }    
@@ -124,7 +126,7 @@ function loadBookmarks() {
 */
 function beginBookmarkScan() {
 
-    if (bookmarks[bookmark_index].lamd != undefined) {
+    if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd.monitor == true) {
             scanForNewReplays(bookmark_index)
         }
