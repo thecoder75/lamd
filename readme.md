@@ -7,7 +7,7 @@
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
 ### Important Update!!!
-**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools for configuration and monitored account list.  Be sure to have LiveMe Pro Tools installed and configured before using LAMD!**
+**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.3xxx releases) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools installed and configured before using LAMD!**
 
 * * *
 
