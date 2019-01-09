@@ -17,6 +17,7 @@ const async = require('async')
 let op = ''
 let bookmarks = []
 let bookmark_index = 0
+let bookmarks_loading = false
 let download_list = []
 let minuteTicks = 0
 let appSettings = {}
@@ -60,6 +61,7 @@ function main() {
 
         loadBookmarks()
         fs.watch(path.join(op, 'bookmarks.json'), () => {
+            if (bookmarks_loading) return;
             process.stdout.write('LiveMe Pro Tools bookmarks file was updated, reading updated one into memory...\n')
             loadBookmarks()
         })
@@ -93,7 +95,8 @@ function main() {
 function loadBookmarks() {
     if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
         // Configuration file was found
-        process.stdout.write('LiveMe Pro Tools bookmarks file loaded.\n')
+
+        if (bookmarks_loading) return;
 
         if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
             setTimeout(()=>{
@@ -109,6 +112,7 @@ function loadBookmarks() {
                         process.stdout.write('\tRead in ' + bookmarks.length + ' bookmarks into memory.\n')
     
                     }
+                    bookmarks_loading = false
                 })
             }, 5000)
         }
