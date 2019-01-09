@@ -45,7 +45,7 @@ function main() {
     else
         op = process.env.HOME + '/.config'
 
-    op += '/LiveMe Pro Tools'
+    op += '/liveme-pro-tools'
 
     if (fs.existsSync(path.join(op, 'Settings'))) {
         // Configuration file was found
