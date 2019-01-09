@@ -9,7 +9,7 @@
     "url": "https://github.com/thecoder75/lamd"
   },
   "scripts": {
-    "start": "node lamd.js",
+    "start": "node index.js",
     "release": "pkg lamd.js --targets linux,win,mac --out-path ./builds"
   },
   "author": "TheCoder75",
