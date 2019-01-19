@@ -226,16 +226,23 @@ function loadBookmarks() {
 */
 function beginBookmarkScan() {
 
-    if (bookmarks[bookmark_index].lamd != undefined) {
-        if (bookmarks[bookmark_index].lamd.monitored == true) {
-            terminal.color('bright-yellow')
-            terminal.writexy(15,4,`Scanning bookmarks now (${bookmarks[bookmark_index].uid})...`)
-            
-            let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
-            terminal.color('bright-white')
-            terminal.writexy( 78 - t.length, 4, t)
+    if (bookmarks[bookmark_index] != undefined) {
+        if (bookmarks[bookmark_index].lamd != undefined) {
+            if (bookmarks[bookmark_index].lamd.monitored == true) {
+                terminal.color('bright-yellow')
+                terminal.writexy(15,4,`Scanning bookmarks now (${bookmarks[bookmark_index].uid})...`)
+                
+                let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
+                terminal.color('bright-white')
+                terminal.writexy( 78 - t.length, 4, t)
 
-            scanForNewReplays(bookmark_index)
+                scanForNewReplays(bookmark_index)
+            }
+        } else {
+            bookmarks[bookmark_index].lamd = {
+                monitored: false,
+                last_checked = 0
+            }
         }
     } else {
         terminal.color('bright-blue')
