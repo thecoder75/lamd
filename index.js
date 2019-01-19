@@ -5,7 +5,6 @@
 */
 
 const os = require('os')
-const platform = require('platform')
 const fs = require('fs')
 const path = require('path')
 const request = require('request')
@@ -34,6 +33,7 @@ function main() {
             minuteTicks = 0;
 
             if (isOnline) {
+                process.stdout.write('Scan process started...\n')
                 beginBookmarkScan()
             }
         }
@@ -53,6 +53,13 @@ function main() {
         // Configuration file was found
         process.stdout.write('LiveMe Pro Tools settings file found, reading...\n')
         appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
+
+        if (appSettings.auth !== undefined) {
+            LiveMe.setAuthDetails(appSettings.auth.email.trim(), appSettings.auth.password.trim())
+            isOnline = true
+        } else {
+            process.stdout.write('Error: Authentication settings were not found.\n')
+        }
     }
 
     if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
@@ -70,6 +77,7 @@ function main() {
         })
 
         setTimeout(() => {
+            process.stdout.write('Scan process started...\n')
             beginBookmarkScan()
         }, 5000)
     }
@@ -115,7 +123,7 @@ function loadBookmarks() {
                     }
                     bookmarks_loading = false
                 })
-            }, 5000)
+            }, 250)
         }
 
     }    
@@ -135,7 +143,16 @@ function beginBookmarkScan() {
         if (bookmarks[bookmark_index].lamd.monitor == true) {
             scanForNewReplays(bookmark_index)
         }
+    } else {
+        fs.writeFile(
+            path.join(op, 'bookmarks.json'),
+            JSON.stringify(bookmarks), 
+            () => {
+
+            }
+        );
     }
+
     if (bookmark_index < bookmarks.length) {
         setTimeout(() => {
             beginBookmarkScan()
@@ -154,6 +171,7 @@ function scanForNewReplays(i) {
 
     if (bookmarks[i] == undefined) return
 
+    process.stdout.write('\t' + bookmarks[i].name + ' (' + bookmarks[i].uid + ')\n')
     LiveMe.getUserReplays(bookmarks[i].uid, 1, 10).then(replays => {
 
         if (replays == undefined) return
@@ -166,16 +184,7 @@ function scanForNewReplays(i) {
         let dt = Math.floor((new Date()).getTime() / 1000)
 
         last_scanned = bookmarks[i].lamd.last_checked
-        bookmarks[i].scanned = dt
-        
-        fs.writeFile(
-            path.join(op, 'bookmarks.json'),
-            JSON.stringify(bookmarks), 
-            () => {
-
-            }
-        );
-        
+        bookmarks[i].lamd.last_checked = dt
 
         var replay_count = 0
         for (ii = 0; ii < replays.length; ii++) {
@@ -554,7 +563,7 @@ const dlQueue = async.queue((task, done) => {
                 break
         }
     })
-}, +appSettings.downloads.parallel || 3)
+}, (appSettings.download === undefined ? 3 : appSettings.downloads.parallel))
 
 
 
