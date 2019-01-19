@@ -12,19 +12,51 @@ const LivemeAPI = require('./livemeapi')
 const LiveMe = new LivemeAPI({})
 const ffmpeg = require('fluent-ffmpeg')
 const async = require('async')
+const terminal = new(require('./terminal'))
 
 let op = ''
 let bookmarks = []
 let bookmark_index = 0
 let bookmarks_loading = false
 let download_list = []
-let minuteTicks = 0
+let minuteTicks = 30
 let appSettings = {}
 let isOnline = false
+let active_downloads = {}
 
 main();
 
 function main() {
+
+    terminal.clear()
+    terminal.color('bright-green')
+    terminal.goto(1,1)
+    terminal.writexy(25, 2, '#         ###   #     # #####  ')
+    terminal.writexy(25, 3, '#        #   #  ##   ## #    # ')
+    terminal.writexy(25, 4, '#       #     # # # # # #     #')
+    terminal.writexy(25, 5, '#       ####### #  #  # #     #')
+    terminal.writexy(25, 6, '#       #     # #     # #     #')
+    terminal.writexy(25, 7, '#       #     # #     # #    # ')
+    terminal.writexy(25, 8, '####### #     # #     # #####  ')
+    terminal.color('bright-yellow')
+    terminal.writexy(25, 10, ' LiveMe Account Monitor Daemon')
+
+    terminal.color('bright-blue')
+    terminal.writexy(1, 14, '+----------------------------------------------------------------------------+')
+    terminal.writexy(1, 15, '|                                                                            |')
+    terminal.writexy(1, 16, '|                                                                            |')
+    terminal.writexy(1, 17, '|                                                                            |')
+    terminal.writexy(1, 18, '|                                                                            |')
+    terminal.writexy(1, 19, '|                                                                            |')
+    terminal.writexy(1, 20, '|                                                                            |')
+    terminal.writexy(1, 21, '|                                                                            |')
+    terminal.writexy(1, 22, '|                                                                            |')
+    terminal.writexy(1, 23, '|                                                                            |')
+    terminal.writexy(1, 24, '+----------------------------------------------------------------------------+')
+    terminal.color('grey')
+
+    terminal.writexy(57, 25, 'Press CTRL+C to quit.')
+    terminal.writexy(2,25,'Status:')
 
     setInterval(() => {
         minuteTicks++;
@@ -33,8 +65,12 @@ function main() {
             minuteTicks = 0;
 
             if (isOnline) {
-                process.stdout.write('Scan process started...\n')
+                terminal.color('bright-yellow')
+                terminal.writexy(12,25,'Scanning bookmarks now...')
                 beginBookmarkScan()
+            } else {
+                terminal.color('bright-green')
+                terminal.writexy(12,25,'ONLINE')
             }
         }
     }, 60000)
@@ -51,55 +87,35 @@ function main() {
 
     if (fs.existsSync(path.join(op, 'Settings'))) {
         // Configuration file was found
-        process.stdout.write('LiveMe Pro Tools settings file found, reading...\n')
+
+        terminal.color('bright-green')
+        terminal.writexy(5,13,'LMPT found')
         appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
 
         if (appSettings.auth !== undefined) {
             LiveMe.setAuthDetails(appSettings.auth.email.trim(), appSettings.auth.password.trim())
             isOnline = true
+            setTimeout(() => {
+                terminal.color('bright-green')
+                terminal.writexy(12,25,'ONLINE')
+            }, 1000)
         } else {
-            process.stdout.write('Error: Authentication settings were not found.\n')
+            terminal.color('bright-red')
+            terminal.writexy(12,25,'OFFLINE - Unable to log into LiveMe')
         }
+    } else {
+        terminal.color('bright-red')
+        terminal.writexy(5,13,'LMPT missing')
     }
 
     if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-        // Configuration file was found
-        process.stdout.write('LiveMe Pro Tools bookmarks file found, reading...\n')
-
         loadBookmarks()
         fs.watch(path.join(op, 'bookmarks.json'), () => {
             if (bookmarks_loading) return;
-
-            process.stdout.write('LiveMe Pro Tools bookmarks file was updated, reading updated one into memory...\n')
             bookmarks_loading = true;
-
             loadBookmarks()
         })
-
-        setTimeout(() => {
-            process.stdout.write('Scan process started...\n')
-            beginBookmarkScan()
-        }, 5000)
     }
-
-
-    // Not sure if I'll keep this feature/function anymore
-    if (fs.existsSync('queued.json')) {
-        fs.readFile('queued.json', 'utf8', (err,data) => {
-            if (!err) {
-                download_list = JSON.parse(data)
-
-                if (download_list.length > 0) {
-                    if (config.console_output) process.stdout.write("\x1b[1;33mResuming existing download queue...\n")
-                
-                    setTimeout(() => {
-                        downloadFile()
-                    }, 5000)
-                }
-            }
-        })
-    }
-
     
 }
 
@@ -118,8 +134,9 @@ function loadBookmarks() {
     
                         bookmark_index = 0;
     
-                        process.stdout.write('\tRead in ' + bookmarks.length + ' bookmarks into memory.\n')
-    
+                        let t = bookmarks.length + ' bookmarks loaded.'
+                        terminal.color('bright-green')
+                        terminal.writexy(78 - t.length,13, t)
                     }
                     bookmarks_loading = false
                 })
@@ -571,7 +588,7 @@ const dlQueue = async.queue((task, done) => {
                 break
         }
     })
-}, (appSettings.download === undefined ? 3 : appSettings.downloads.parallel))
+}, (appSettings.download === undefined ? 3 : (appSettings.downloads.parallel < 5) ? appSettings.downloads.parallel : 5))
 
 
 
@@ -593,3 +610,11 @@ function downloadFile() {
         }
     })
 }
+
+
+
+
+
+
+function termClear() { process.stdout.write('\x1b[2J\x1b[1;1H') }
+function termGotoXY(x,y) { process.stdout.write('\1xb['+y+';'+x+'H') }
