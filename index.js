@@ -252,8 +252,6 @@ function beginBookmarkScan() {
 
         scan_active = false
 
-        /*
-        DEBUG
         fs.writeFile(
             path.join(op, 'bookmarks.json'),
             JSON.stringify(bookmarks), 
@@ -261,7 +259,7 @@ function beginBookmarkScan() {
                 
             }
         );
-        */
+        
     }
 
     bookmark_index++
