@@ -194,8 +194,9 @@ function loadBookmarks() {
         if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
             setTimeout(()=>{
 
+                let t = '        Loading bookmarks...'
                 terminal.color('bright-yellow')
-                terminal.writexy(55,22,'Loading bookmarks...')
+                terminal.writexy(79 - t, 22, t)
 
                 fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
                     if (err) {
