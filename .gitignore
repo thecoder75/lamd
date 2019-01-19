@@ -3,3 +3,5 @@
 package.json
 *.bak
 node_modules/*
+
+builds/*
