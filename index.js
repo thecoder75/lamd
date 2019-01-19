@@ -68,7 +68,9 @@ function main() {
     terminal.writexy(59, 24, 'Press CTRL+C to quit.')
     terminal.writexy( 3, 4,'Status:')
 
-    tickThread()
+    setTimeout(() => {
+        tickThread()
+    }, 1000)
 
     op = ''
     if (process.platform == 'win32')
@@ -113,73 +115,76 @@ function main() {
 }
 
 async function tickThread() {
-    setInterval(() => {
-        if (active_downloads.length > 0) {
-            let y = 0
+    if (active_downloads.length > 0) {
+        let y = 0
 
-            terminal.color('bright-green')
-            terminal.writexy(3,22,'Downloading '+download_list.length+' replays')
+        terminal.color('bright-green')
+        terminal.writexy(3,22,'Downloading '+download_list.length+' replays')
 
-            for (var vid in active_downloads) {
-                
-                let p = active_downloads[vid].progress + '%'
-                terminal.color('white')
-                terminal.writexy(2, 6 + y, vid)
-                terminal.color('bright-yellow')
-                terminal.writexy(78 - p, 6 + y, active_downloads[vid].status)
+        for (var vid in active_downloads) {
+            
+            let p = active_downloads[vid].progress + '%'
+            terminal.color('white')
+            terminal.writexy(2, 6 + y, vid)
+            terminal.color('bright-yellow')
+            terminal.writexy(78 - p, 6 + y, active_downloads[vid].status)
+            terminal.color('bright-blue')
+            terminal.writexy(2, 7 + y, active_downloads[vid].status)
+
+            y += 3
+        }
+    }
+
+
+
+    secondTicks++
+
+    let t1 = 29 - minuteTicks
+    let t2 = 60 - secondTicks
+    if (t1 < 10) t1 = '0' + t1
+    if (t2 < 10) t2 = '0' + t2
+    
+    if (!scan_active && (minuteTicks > 15)) {
+        terminal.color('bright-cyan')
+        terminal.writexy(12,4,`Next scan in ${t1}:${t2}`)
+    }
+
+    if (!scan_active && (minuteTicks < 16)) {
+        terminal.color('bright-blue')
+        terminal.writexy(1,  4, '|                                                                              |')
+        terminal.color('blue')
+        terminal.writexy( 3, 4,'Status:')
+    }
+
+    if (secondTicks > 59) {
+        secondTicks = 0
+        minuteTicks++
+
+        terminal.color('bright-blue')
+        terminal.writexy(1,  4, '|                                                                              |')
+        terminal.color('blue')
+        terminal.writexy( 3, 4,'Status:')
+
+        if (minuteTicks > 29) {
+            // We begin a scan process
+            minuteTicks = 0;
+
+            if (isOnline) {
+                scan_active = true
+                beginBookmarkScan()
+            } else {
                 terminal.color('bright-blue')
-                terminal.writexy(2, 7 + y, active_downloads[vid].status)
-
-                y += 3
+                terminal.writexy(1,  4, '|                                                                              |')
+                terminal.color('blue')
+                terminal.writexy( 3, 4,'Status:')
             }
         }
+    }
 
-
-
-        secondTicks++
-
-        let t1 = 29 - minuteTicks
-        let t2 = 60 - secondTicks
-        if (t1 < 10) t1 = '0' + t1
-        if (t2 < 10) t2 = '0' + t2
-        
-        if (!scan_active && (minuteTicks > 15)) {
-            terminal.color('bright-cyan')
-            terminal.writexy(12,4,`Next scan in ${t1}:${t2}`)
-        }
-
-        if (!scan_active && (minuteTicks < 16)) {
-            terminal.color('bright-blue')
-            terminal.writexy(1,  4, '|                                                                              |')
-            terminal.color('blue')
-            terminal.writexy( 3, 4,'Status:')
-        }
-
-        if (secondTicks > 59) {
-            secondTicks = 0
-            minuteTicks++
-
-            terminal.color('bright-blue')
-            terminal.writexy(1,  4, '|                                                                              |')
-            terminal.color('blue')
-            terminal.writexy( 3, 4,'Status:')
-
-            if (minuteTicks > 29) {
-                // We begin a scan process
-                minuteTicks = 0;
-
-                if (isOnline) {
-                    scan_active = true
-                    beginBookmarkScan()
-                } else {
-                    terminal.color('bright-blue')
-                    terminal.writexy(1,  4, '|                                                                              |')
-                    terminal.color('blue')
-                    terminal.writexy( 3, 4,'Status:')
-                }
-            }
-        }
+    setTimeout(() => {
+        tickThread()
     }, 1000)
+
 }
 
 function loadBookmarks() {
@@ -241,7 +246,7 @@ function beginBookmarkScan() {
         } else {
             bookmarks[bookmark_index].lamd = {
                 monitored: false,
-                last_checked = 0
+                last_checked: 0
             }
         }
     } else {
