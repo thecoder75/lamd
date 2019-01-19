@@ -226,7 +226,7 @@ function loadBookmarks() {
 */
 function beginBookmarkScan() {
 
-    if (bookmarks[bookmark_index] != undefined) {
+    if (bookmarks[bookmark_index].lamd != undefined) {
         if (bookmarks[bookmark_index].lamd.monitored == true) {
             terminal.color('bright-yellow')
             terminal.writexy(15,4,`Scanning bookmarks now (${bookmarks[bookmark_index].uid})...`)
