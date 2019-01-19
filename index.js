@@ -451,6 +451,7 @@ const dlQueue = async.queue((task, done) => {
                         ffmpeg()
                             .on('start', c => {
 
+                                process.stdout.write('\tCombining chunks for ' + video.vid + ' and converting to MP4 format...\n')
                                 /*
                                 mainWindow.webContents.send('download-progress', {
                                     videoid: task,
@@ -475,8 +476,13 @@ const dlQueue = async.queue((task, done) => {
                             })
                             .on('end', (stdout, stderr) => {
                                 
+                                process.stdout.write('\t' + video.vid + ' downloaded.\n')
+
                                 if (appSettings.get('downloads.deltmp')) {
-                                    tsList.forEach(file => fs.unlinkSync(file.path))
+                                    setTimeout(()=>{
+                                        tsList.forEach(file => fs.unlinkSync(file.path))
+                                    }, 15000)
+                                    
                                 }
 
                                 if (appSettings.downloads.saveMessageHistory == true) {
@@ -530,7 +536,7 @@ const dlQueue = async.queue((task, done) => {
                     .outputOptions(ffmpegOpts)
                     .output(path + '/' + filename)
                     .on('end', function(stdout, stderr) {
-                        DataManager.addDownloaded(video.vid)
+                        process.stdout.write('\t' + video.vid + ' downloaded.\n')
                         return done()
                     })
                     .on('progress', function(progress) {
@@ -547,6 +553,8 @@ const dlQueue = async.queue((task, done) => {
                         */
                     })
                     .on('start', function(c) {
+
+                        process.stdout.write('\tDownloading ' + video.vid + ' using FFMPEG...\n')
                         /*
                         mainWindow.webContents.send('download-start', {
                             videoid: task,
