@@ -2,12 +2,11 @@
 
 ![Latest Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/latest/total.svg?style=flat-square&label=Latest+Release+Downloaded)
 
-### L.A.M.D. will be receiving a major rewrite/update here soon with a new release shortly after.
-
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
 ### Important Update!!!
-**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.3xxx releases) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools installed and configured before using LAMD!**
+
+**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.3xxx releases) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.3xx or higher installed and configured before using LAMD or it will not work!**
 
 * * *
 
@@ -24,16 +23,18 @@ Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/
 ### FFMPEG Required
 ***Please note that you must have FFMPEG already installed on your computer or located in the same place as LAMD for downloading to work.***
 
+I am looking into making it possible to use the built-in chunk downloader without the need for FFMPEG to be installed for just combining the chunks into a single media file.
+
 * * *
 
 ## Configuration
-LAMD will now use/access LiveMe Pro Tools (v1.250.xxxxxxxx or higher) configuration settings and use the same settings for its downloads and function handling. 
+LAMD will now use/access LiveMe Pro Tools v1.3xx or higher configuration settings and use the same settings for its downloads and function handling. 
 
 * * *
 
 ## Built With
 * [NodeJS](http://nodejs.org)
-* [LiveMe-API](https://thecoder75.github.io/liveme-api)
+* LiveMe-API (Now integrated)
 
 ## Contributing
 If you find any bugs or would like to help add features or additional functions, please create a pull request for review by the current contributors.
