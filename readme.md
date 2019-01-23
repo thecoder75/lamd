@@ -20,20 +20,21 @@ This is a stand-alone application designed to run in the background and monitor 
 ### Prebuilt Releases
 Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
-### FFMPEG Required
-***Please note that you must have FFMPEG already installed on your computer or located in the same place as LAMD for downloading to work.***
+### FFMPEG No Longer Required!!!
+*All reliance on FFMPEG has been removed from this project.*
 
-I am looking into making it possible to use the built-in chunk downloader without the need for FFMPEG to be installed for just combining the chunks into a single media file.
+Replays are downloaded as .TS media files only.  This allows for downloading of over 10 replays at a time without straining the CPU.
 
 * * *
 
 ## Configuration
-LAMD will now use/access LiveMe Pro Tools v1.3xx or higher configuration settings and use the same settings for its downloads and function handling. 
+LAMD will now use/access LiveMe Pro Tools v1.308 or higher configuration settings and use the same settings for its downloads and function handling. 
 
 * * *
 
 ## Built With
 * [NodeJS](http://nodejs.org)
+* [ElectronJS](https://electronjs.org)
 * LiveMe-API (Now integrated)
 
 ## Contributing
