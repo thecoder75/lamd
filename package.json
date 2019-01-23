@@ -1,6 +1,6 @@
 {
   "name": "lamd",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Command line utility to monitor accounts for new replays and automatically downloads them.",
   "homepage": "https://github.com/thecoder75/lamd",
   "main": "index.js",
@@ -9,18 +9,17 @@
     "url": "https://github.com/thecoder75/lamd"
   },
   "scripts": {
-    "start": "node index.js",
-    "release-win": "nexe lamd.js --build --clean --target win --output builds/lamd.exe",
-    "release-mac": "nexe lamd.js --build --clean --target mac --output builds/lamd.app",
-    "release-linux": "nexe lamd.js --build --clean --target linux --output builds/lamd",
-    "release": "npm run release-win && npm run release-mac && npm run release-linux"
+    "start": "NODE_ENV='development' && ./node_modules/.bin/electron ./index.js --enable-logging",
+    "release": "build -w && build -l && build -m",
+    "release-win": "build -w",
+    "release-linux": "build -l",
+    "release-mac": "build -m"
   },
   "author": "TheCoder75",
   "license": "GPL-3.0",
   "dependencies": {
     "async": "^2.6.1",
     "fs": "0.0.1-security",
-    "os": "^0.1.1",
     "path": "^0.12.7",
     "platform": "^1.3.5",
     "request": "^2.88.0",
