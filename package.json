@@ -19,8 +19,6 @@
   "license": "GPL-3.0",
   "dependencies": {
     "async": "^2.6.1",
-    "electron": "^3.1.1",
-    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "os": "^0.1.1",
     "path": "^0.12.7",
@@ -28,5 +26,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "electron": "^3.1.1"
+  }
 }
