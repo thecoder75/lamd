@@ -65,7 +65,7 @@ h1,h2,h3,h4,h5,h6 {
 }
 .download .progress-bar .bar { 
     display: block;
-    color: rgb
+    background-color: rgb(0,212,0);
 }
 
 #statusbar {
