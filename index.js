@@ -11,22 +11,12 @@ const path = require('path')
 const request = require('request')
 const LivemeAPI = require('./livemeapi')
 const LiveMe = new LivemeAPI({})
-
+const concat = require('concat-files')
 const async = require('async')
 const pjson = require('./package.json')
 
 let op = ''
-let bookmarks = []
-let bookmark_index = 0
-let bookmarks_loading = false
-let minuteTicks = 29
-let secondTicks = 45
-let appSettings = {}
-let isOnline = false
-let active_downloads = {}
 let download_list = []
-let scan_active = false
-
 let mainWindow = null
 
 function createWindow() {
@@ -57,7 +47,7 @@ function createWindow() {
     /**
      * Configure our window contents and callbacks
      */
-    mainWindow.loadURL(`file://${__dirname}/app/index.html`)
+    mainWindow.loadURL(`file://${__dirname}/src/index.html`)
     mainWindow
         .on('open', () => {
 
@@ -85,12 +75,11 @@ function createWindow() {
 
     if (fs.existsSync(path.join(op, 'Settings'))) {
         appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
-        if (appSettings.auth !== undefined) {
-            LiveMe.setAuthDetails(appSettings.auth.email.trim(), appSettings.auth.password.trim())
-            isOnline = true
-        }
     }
+    appSettings.path = op
+
     global.appSettings = appSettings
+    global.LiveMe = LiveMe
 
     setTimeout(() => {
         mainWindow.show()
@@ -120,12 +109,13 @@ app.on('activate', () => {
 const dlQueue = async.queue((task, done) => {
 
     LiveMe.getVideoInfo(task).then(video => {
+        const path = appSettings.downloads.path
         const dt = new Date(video.vtime * 1000)
         const mm = dt.getMonth() + 1
         const dd = dt.getDate()
         let ffmpegOpts = []
 
-        let filename = appSettings.get('downloads.template')
+        let filename = appSettings.downloads.template
             .replace(/%%broadcaster%%/g, video.uname)
             .replace(/%%longid%%/g, video.userid)
             .replace(/%%replayid%%/g, video.vid)
@@ -159,7 +149,7 @@ const dlQueue = async.queue((task, done) => {
             body.split('\n').forEach(line => {
                 if (line.indexOf('.ts') !== -1) {
                     const tsName = line.split('?')[0]
-                    let tsPath = `${path}/lpt_temp/${video.vid}_${tsName}`
+                    let tsPath = `${path}/lamd_temp/${video.vid}_${tsName}`
 
                     if (process.platform == 'win32') {
                         tsPath = tsPath.replace(/\\/g, '/');
@@ -202,7 +192,7 @@ const dlQueue = async.queue((task, done) => {
                     })
 
             }, () => {
-                let cfile = path + '/lpt_temp/' + video.vid + '.txt'
+                let cfile = path + '/lamd_temp/' + video.vid + '.txt'
                 let concatFile = fs.readFileSync(cfile, 'utf-8')
                 let cList = []
 
@@ -210,7 +200,7 @@ const dlQueue = async.queue((task, done) => {
                     let l = line.split(' ')
                     
                     if (l.length > 1)
-                        cList.push(`${path}/lpt_temp/${l[1]}`)
+                        cList.push(`${path}/lamd_temp/${l[1]}`)
                 })
 
                 mainWindow.webContents.send('download-progress', {
@@ -266,7 +256,7 @@ const dlQueue = async.queue((task, done) => {
         })
 
     })
-}, +appSettings.lamd.parallel || 3)
+}, +3)
 
 
 /*
@@ -285,7 +275,6 @@ ipcMain.on('add-download', (event, arg) => {
 ipcMain.on('cancel-download', (event, arg) => {
     dlQueue.remove(function(task) {
         if (task.data === arg.videoid) {
-            DataManager.removeFromQueueList(task.data)
             return true
         }
         return false
