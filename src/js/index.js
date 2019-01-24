@@ -165,7 +165,6 @@ function beginBookmarkScan() {
     } else {
         $('statusbar h1').html(`Bookmark scan complete.`)
         
-        /*
         fs.writeFile(
             path.join(op, 'bookmarks.json'),
             JSON.stringify(bookmarks), 
@@ -173,7 +172,7 @@ function beginBookmarkScan() {
                 
             }
         );
-        */
+
     }
 
     bookmark_index++
