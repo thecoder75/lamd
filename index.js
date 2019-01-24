@@ -221,7 +221,7 @@ const dlQueue = async.queue((task, done) => {
                     }
                 })
                 
-                if (appSettings.get('downloads.saveMessageHistory') == true) {
+                if (appSettings.downloads.saveMessageHistory == true) {
                     LiveMe.getChatHistoryForVideo(video.msgfile)
                     .then(raw => {
                         let t = raw.split('\n')
