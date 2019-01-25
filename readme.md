@@ -6,7 +6,7 @@ This is a stand-alone application designed to run in the background and monitor 
 
 ### Important Update!!!
 
-**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.3xxx releases) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.3xx or higher installed and configured before using LAMD or it will not work!**
+**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.309 release) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.3xx or higher installed and configured before using LAMD or it will not work!**
 
 * * *
 
