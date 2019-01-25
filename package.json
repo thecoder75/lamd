@@ -27,6 +27,66 @@
     "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
+    "electron-builder": "^20.38.5",
     "electron": "^3.1.1"
-  }
-}
+  },
+  "build": {
+    "appId": "com.thecoderstoolbox.lamd",
+    "files": [
+        "**/*",
+        "node_modules/**/*"
+    ],
+    "directories": {
+        "output": "./dist"
+    },
+    "productName": "LAMD",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "linux": {
+        "icon": "build/appicon.png",
+        "target": [
+            {
+                "target": "AppImage",
+                "arch": [
+                    "x64"
+                ]
+            },
+            {
+                "target": "deb",
+                "arch": [
+                    "x64"
+                ]
+            }
+        ],
+        "category": "Network",
+        "description": "Browse, search and manage accounts, replays and more without the need of an actual account on Live.me.",
+        "maintainer": "thecoder1975@gmail.com"
+    },
+    "appImage": {
+        "category": "Network"
+    },
+    "win": {
+        "target": [
+            {
+                "target": "zip",
+                "arch": [
+                    "x64"
+                ]
+            }
+        ],
+        "icon": "build/appicon.ico"
+    },
+    "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "perMachine": true
+    },
+    "mac": {
+        "category": "public.app-category.video",
+        "target": [
+            "zip"
+        ],
+        "identity": null,
+        "icon": "build/appicon.icns"
+    }
+}}
