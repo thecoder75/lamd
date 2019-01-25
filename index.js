@@ -254,7 +254,7 @@ const dlQueue = async.queue((task, done) => {
         })
 
     })
-}, +3)
+}, +appSettings.lamd.concurrency || 3)
 
 
 /*
