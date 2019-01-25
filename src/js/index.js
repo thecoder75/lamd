@@ -17,6 +17,19 @@ let scan_active = false
 
 $(function(){
 
+    if (appSettings.lamd.concurrent == undefined) {
+        $('#main').html(`
+            <div style="padding: 240px 32px 0; text-align: center;">
+                <h3 style="color: red;">Unsupported LiveMe Pro Tools Detected!</h3>
+                <br>
+                <p style="line-height: 1.5em;">
+                    You must upgrade to v1.309.20190125 or newer and configure LAMD settings before starting LAMD.
+                </p>
+            </div>
+        `)
+        return;
+    }
+
     ipcRenderer.on('download-add', (event, arg) => {
         if ($('#download-' + arg.vid).length > 0) return
         $('#main').append(`
@@ -83,7 +96,7 @@ $(function(){
             $('#statusbar svg').addClass('online')
             isOnline = true
         }
-    }, 500)
+    }, 250)
 
     setInterval(() => {
 
@@ -100,20 +113,19 @@ $(function(){
             $('#statusbar h1').html(`Next scan in ${t1}:${t2}`)
         }
     
-        if (secondTicks > 59) {
-            secondTicks = 0
-            minuteTicks++
-    
-            if (minuteTicks > 29) {
-                minuteTicks = 0;
-    
-                if (isOnline) {
-                    scan_active = true
-                    beginBookmarkScan()
-                }
+        secondTicks = 0
+        minuteTicks++
+
+        if (minuteTicks > (appSettings.lamd.cycletime)) {
+            minuteTicks = 0;
+
+            if (isOnline) {
+                scan_active = true
+                beginBookmarkScan()
             }
         }
-        }, 1000)
+
+    }, 1000)
 
 })
 
