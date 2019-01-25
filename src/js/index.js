@@ -8,11 +8,13 @@ let bookmarks = []
 let bookmark_index = 0
 let bookmarks_loading = false
 
-let minuteTicks = 29
-let secondTicks = 45
+let minuteTicks = appSettings.lamd.cycletime - 1
+let secondTicks = 55
 
 let isOnline = false
 let scan_active = false
+
+let appPath = (process.platform == 'win32' ? process.env.APPDATA : process.env.HOME + (process.platform == 'darwin' ? '/Library/Preferences' : '/.config')) + '/liveme-pro-tools/'
 
 
 $(function(){
@@ -81,9 +83,9 @@ $(function(){
         `)
     })
 
-    if (fs.existsSync(path.join(appSettings.path, 'bookmarks.json'))) {
+    if (fs.existsSync(appPath + 'bookmarks.json')) {
         loadBookmarks()
-        fs.watch(path.join(appSettings.path, 'bookmarks.json'), () => {
+        fs.watch(appPath + 'bookmarks.json', () => {
             if (bookmarks_loading) return;
             bookmarks_loading = true;
             loadBookmarks()
@@ -104,27 +106,28 @@ $(function(){
 
         secondTicks++
 
-        let t1 = 29 - minuteTicks
+        let t1 = (appSettings.lamd.cycletime - 1) - minuteTicks
         let t2 = 60 - secondTicks
         if (t1 < 10) t1 = '0' + t1
         if (t2 < 10) t2 = '0' + t2
         
-        if (!scan_active && (minuteTicks > 20)) {
+        if (!scan_active) {
             $('#statusbar h1').html(`Next scan in ${t1}:${t2}`)
         }
     
-        secondTicks = 0
-        minuteTicks++
+        if (secondTicks > 59) {
+            secondTicks = 0
+            minuteTicks++
 
-        if (minuteTicks > (appSettings.lamd.cycletime)) {
-            minuteTicks = 0;
+            if (minuteTicks == appSettings.lamd.cycletime) {
+                minuteTicks = 0;
 
-            if (isOnline) {
-                scan_active = true
-                beginBookmarkScan()
+                if (isOnline) {
+                    scan_active = true
+                    beginBookmarkScan()
+                }
             }
         }
-
     }, 1000)
 
 })
@@ -138,9 +141,9 @@ function cancelDownload(i) {
 
 
 function loadBookmarks() {
-    if (fs.existsSync(path.join(appSettings.path, 'bookmarks.json'))) {
+    if (fs.existsSync(appPath + 'bookmarks.json')) {
         $('#statusbar h1').html('Loading bookmarks...')
-        fs.readFile(path.join(appSettings.path, 'bookmarks.json'), 'utf8', function(err, data) {
+        fs.readFile(appPath + 'bookmarks.json', 'utf8', function(err, data) {
             if (err) {
                 bookmarks = []
             } else {
@@ -164,6 +167,8 @@ function beginBookmarkScan() {
     if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd != undefined) {
             if (bookmarks[bookmark_index].lamd.monitor == true) {
+                console.log(`${bookmark_index} - Checking ${bookmarks[bookmark_index].nickname}`)
+
                 let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
                 $('#statusbar h1').html(`Scanning ${bookmarks[bookmark_index].nickname} (${bookmarks[bookmark_index].uid}) ${t}`)
                 scanForNewReplays(bookmark_index)
@@ -177,8 +182,10 @@ function beginBookmarkScan() {
     } else {
         $('statusbar h1').html(`Bookmark scan complete.`)
         
+        scan_active = false
+
         fs.writeFile(
-            path.join(op, 'bookmarks.json'),
+            appPath + 'bookmarks.json',
             JSON.stringify(bookmarks), 
             () => {
                 

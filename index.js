@@ -15,9 +15,10 @@ const concat = require('concat-files')
 const async = require('async')
 const pjson = require('./package.json')
 
-let op = ''
+let op = process.platform == 'win32' ? process.env.APPDATA : process.env.HOME + (process.platform == 'darwin' ? '/Library/Preferences' : '/.config')
 let download_list = []
 let mainWindow = null
+let appSettings = JSON.parse(fs.readFileSync(path.join(op, 'liveme-pro-tools/Settings')))
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -61,19 +62,6 @@ function createWindow() {
 
         })
     
-    op = ''
-    if (process.platform == 'win32')
-        op = process.env.APPDATA
-    else if (process.platform == 'darwin')
-        op = process.env.HOME + '/Library/Preferences'
-    else
-        op = process.env.HOME + '/.config'
-
-    op += '/liveme-pro-tools'
-
-    if (fs.existsSync(path.join(op, 'Settings'))) {
-        appSettings = JSON.parse(fs.readFileSync(path.join(op, 'Settings')))
-    }
     appSettings.path = op
 
     global.appSettings = appSettings
