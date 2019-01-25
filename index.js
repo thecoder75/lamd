@@ -59,8 +59,6 @@ function createWindow() {
 
             mainWindow = null
 
-
-            //app.quit()
         })
     
     op = ''
