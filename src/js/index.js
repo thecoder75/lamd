@@ -151,14 +151,14 @@ function beginBookmarkScan() {
 
     if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd != undefined) {
-            if (bookmarks[bookmark_index].lamd.monitored == true) {
+            if (bookmarks[bookmark_index].lamd.monitor == true) {
                 let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
                 $('#statusbar h1').html(`Scanning ${bookmarks[bookmark_index].nickname} (${bookmarks[bookmark_index].uid}) ${t}`)
                 scanForNewReplays(bookmark_index)
             }
         } else {
             bookmarks[bookmark_index].lamd = {
-                monitored: false,
+                monitor: false,
                 last_checked: 0
             }
         }
