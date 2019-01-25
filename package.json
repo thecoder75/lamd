@@ -43,7 +43,7 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "asar": true,
     "linux": {
-        "icon": "build/appicon.png",
+        "icon": "build/icon.png",
         "target": [
             {
                 "target": "AppImage",
@@ -74,7 +74,7 @@
                 ]
             }
         ],
-        "icon": "build/appicon.ico"
+        "icon": "build/icon.png"
     },
     "nsis": {
         "oneClick": false,
@@ -87,6 +87,6 @@
             "zip"
         ],
         "identity": null,
-        "icon": "build/appicon.icns"
+        "icon": "build/icon.png"
     }
 }}
