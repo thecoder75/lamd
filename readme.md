@@ -6,7 +6,7 @@ This is a stand-alone application designed to run in the background and monitor 
 
 ### Important Update!!!
 
-**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.309 release) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.3xx or higher installed and configured before using LAMD or it will not work!**
+**LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.309 release) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.309 or higher installed and configured before using LAMD or it will not work!**
 
 * * *
 
@@ -21,7 +21,7 @@ This is a stand-alone application designed to run in the background and monitor 
 Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
 ### FFMPEG No Longer Required!!!
-*All reliance on FFMPEG has been removed from this project.*
+***All reliance on FFMPEG has been removed from this project.***
 
 Replays are downloaded as .TS media files only.  This allows for downloading of over 10 replays at a time without straining the CPU.
 
