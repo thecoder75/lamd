@@ -1,4 +1,11 @@
 # LiveMe Account Monitor Daemon (L.A.M.D.)
+![GNU AGPLv3](https://img.shields.io/github/license/thecoder75/lamd.svg)
+![Current Release](https://img.shields.io/github/release/thecoder75/lamd.svg)
+![Current Release Date](https://img.shields.io/github/release-date/thecoder75/lamd.svg)
+![Last Commit Date](https://img.shields.io/github/last-commit/thecoder75/lamd.svg)
+![Active Issues](https://img.shields.io/github/issues/thecoder75/lamd.svg)
+![Discord Chat](https://img.shields.io/discord/340106715334836224.svg)
+
 
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
@@ -45,4 +52,4 @@ If you find any bugs or would like to help add features or additional functions,
 * [zp](https://github.com/zp)
 
 ## License
-This project is licensed under the GPL-3 License - see the [LICENSE](LICENSE) file for details
+This project is now licensed under the [GNU AGPLv3](LICENSE) License.
