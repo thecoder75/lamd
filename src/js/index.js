@@ -167,7 +167,7 @@ function beginBookmarkScan() {
     if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd != undefined) {
             if (bookmarks[bookmark_index].lamd.last_checked == 0) {
-                bookmarks[bookmark_index].lamd.last_checked = bookmarks[bookmark_index].newest_replay;
+                bookmarks[bookmark_index].lamd.last_checked = parseInt(bookmarks[bookmark_index].newest_replay);
             }
             if (bookmarks[bookmark_index].lamd.monitored != undefined) {
                 delete(bookmarks[bookmark_index].lamd.monitored)
@@ -186,19 +186,6 @@ function beginBookmarkScan() {
                 last_checked: 0
             }
         }
-    } else {
-        $('statusbar h1').html(`Bookmark scan complete.`)
-        
-        scan_active = false
-
-        fs.writeFile(
-            appPath + 'bookmarks.json',
-            JSON.stringify(bookmarks), 
-            () => {
-                
-            }
-        );
-
     }
 
     bookmark_index++
@@ -209,7 +196,17 @@ function beginBookmarkScan() {
         }, 25)
     } else {
         bookmark_index = 0;
-        $('#statusbar h1').html(``)
+        $('#statusbar h1').html(`Bookmark scan complete.`)
+        
+        scan_active = false
+
+        fs.writeFile(
+            appPath + 'bookmarks.json',
+            JSON.stringify(bookmarks, null, 2), 
+            () => {
+                
+            }
+        );
     }
 
 
