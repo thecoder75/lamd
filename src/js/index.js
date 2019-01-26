@@ -9,7 +9,7 @@ let bookmark_index = 0
 let bookmarks_loading = false
 
 let minuteTicks = appSettings.lamd.cycletime - 1
-let secondTicks = 55
+let secondTicks = 45
 
 let isOnline = false
 let scan_active = false
@@ -68,7 +68,7 @@ $(function(){
 
     ipcRenderer.on('download-complete', (event, arg) => {
         if ($('#download-' + arg.videoid).length < 1) return
-        $('#download-' + arg.videoid).remove()
+        $('#download-' + arg.videoid).slideUp(400).remove()
     })
 
     ipcRenderer.on('download-error', (event, arg) => {
