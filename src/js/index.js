@@ -166,6 +166,13 @@ function beginBookmarkScan() {
 
     if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd != undefined) {
+            if (bookmarks[bookmark_index].lamd.last_checked == 0) {
+                bookmarks[bookmark_index].lamd.last_checked = bookmarks[bookmark_index].last_checked;
+            }
+            if (bookmarks[bookmark_index].lamd.monitored != undefined) {
+                delete(bookmarks[bookmark_index].lamd.monitored)
+                bookmarks[bookmark_index].lamd.monitor = false
+            }
             if (bookmarks[bookmark_index].lamd.monitor == true) {
                 console.log(`${bookmark_index} - Checking ${bookmarks[bookmark_index].nickname}`)
 
