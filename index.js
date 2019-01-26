@@ -125,7 +125,7 @@ const dlQueue = async.queue((task, done) => {
 
         request(video.hlsvideosource, (err, res, body) => {
             if (err || !body) {
-                fs.writeFileSync(`${path}/${filename}-error.log`, JSON.stringify(err, null, 2))
+                fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, JSON.stringify(err, null, 2))
                 return done({ videoid: task, error: err || 'Failed to fetch m3u8 file.' })
             }
 
@@ -153,7 +153,7 @@ const dlQueue = async.queue((task, done) => {
             fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
 
             let downloadedChunks = 0
-            async.eachLimit(tsList, 3, (file, next) => {
+            async.eachLimit(tsList, 4, (file, next) => {
 
                 const stream = request(`${video.hlsvideosource.split('/').slice(0, -1).join('/')}/${file.name}`)
                     .on('error', err => {
@@ -193,8 +193,8 @@ const dlQueue = async.queue((task, done) => {
                             percent: 100
                         })
                         fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, err)
-                        return done({ videoid: task, error: err })
                     }
+                    mainWindow.webContents.send('download-complete', { videoid: task })
                 })
                 
                 if (appSettings.downloads.saveMessageHistory == true) {
@@ -222,7 +222,7 @@ const dlQueue = async.queue((task, done) => {
                         }
 
                         fs.writeFileSync(`${appSettings.downloads.path}/${filename}-chat.txt`, dump)
-                        return done()
+                        mainWindow.webContents.send('download-complete', { videoid: task })
                     })
                 }
                 return done()
@@ -243,8 +243,6 @@ ipcMain.on('add-download', (event, arg) => {
     dlQueue.push(arg.videoid, err => {
         if (err) {
             mainWindow.webContents.send('download-error', err)
-        } else {
-            mainWindow.webContents.send('download-complete', { videoid: arg.videoid })
         }
     })
 })
