@@ -167,7 +167,7 @@ function beginBookmarkScan() {
     if (bookmarks[bookmark_index] != undefined) {
         if (bookmarks[bookmark_index].lamd != undefined) {
             if (bookmarks[bookmark_index].lamd.last_checked == 0) {
-                bookmarks[bookmark_index].lamd.last_checked = bookmarks[bookmark_index].last_checked;
+                bookmarks[bookmark_index].lamd.last_checked = bookmarks[bookmark_index].newest_replay;
             }
             if (bookmarks[bookmark_index].lamd.monitored != undefined) {
                 delete(bookmarks[bookmark_index].lamd.monitored)
