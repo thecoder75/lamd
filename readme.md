@@ -1,7 +1,5 @@
 # LiveMe Account Monitor Daemon (L.A.M.D.)
 
-![Latest Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/latest/total.svg?style=flat-square&label=Latest+Release+Downloaded)
-
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
 
 ### Important Update!!!
@@ -18,7 +16,9 @@ This is a stand-alone application designed to run in the background and monitor 
 ## Downloads
 
 ### Prebuilt Releases
-Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
+Latest Release: ![Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/3.0.1/total.svg?style=flat-square&label=v3.0.1)
+
+All Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
 ### FFMPEG No Longer Required!!!
 ***All reliance on FFMPEG has been removed from this project.***
