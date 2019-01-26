@@ -142,7 +142,6 @@ function cancelDownload(i) {
 
 function loadBookmarks() {
     if (fs.existsSync(appPath + 'bookmarks.json')) {
-        $('#statusbar h1').html('Loading bookmarks...')
         fs.readFile(appPath + 'bookmarks.json', 'utf8', function(err, data) {
             if (err) {
                 bookmarks = []
@@ -150,10 +149,6 @@ function loadBookmarks() {
                 bookmarks = JSON.parse(data)
                 if (bookmarks.length == 0) return
                 bookmark_index = 0;
-                $('#statusbar h1').html('Loading bookmarks...')
-                setTimeout(() => {
-                    $('#statusbar h1').html(bookmarks.length + ' bookmarks loaded.')
-                }, 1000)
             }
         })
     }    
