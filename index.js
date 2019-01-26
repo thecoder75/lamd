@@ -129,7 +129,7 @@ const dlQueue = async.queue((task, done) => {
                 return done({ videoid: task, error: err || 'Failed to fetch m3u8 file.' })
             }
 
-            let concatList = ''
+            let concatList = []
             const tsList = []
             body.split('\n').forEach(line => {
                 if (line.indexOf('.ts') !== -1) {
@@ -141,7 +141,7 @@ const dlQueue = async.queue((task, done) => {
                     }
 
                     if (concatList.indexOf(tsPath) === -1) {
-                        concatList += video.vid + '_' + tsName + '\n'
+                        concatList.push(tsPath)
                         tsList.push({ name: tsName, path: tsPath })
                     }
                 }
@@ -150,7 +150,7 @@ const dlQueue = async.queue((task, done) => {
             if (!fs.existsSync(`${appSettings.downloads.path}/lamd_temp`)) {
                 fs.mkdirSync(`${appSettings.downloads.path}/lamd_temp`)
             }
-            fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
+            //fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
 
             let downloadedChunks = 0
             async.eachLimit(tsList, 4, (file, next) => {
@@ -177,7 +177,7 @@ const dlQueue = async.queue((task, done) => {
                     })
 
             }, () => {
-                let concatList = fs.readFileSync(appSettings.downloads.path + '/lamd_temp/' + video.vid + '.txt', 'utf-8')
+                //let concatList = fs.readFileSync(appSettings.downloads.path + '/lamd_temp/' + video.vid + '.txt', 'utf-8')
 
                 mainWindow.webContents.send('download-progress', {
                     videoid: task,
