@@ -23,7 +23,7 @@ This is a stand-alone application designed to run in the background and monitor 
 ## Downloads
 
 ### Prebuilt Releases
-[![Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/3.0.1/total.svg?style=flat&label=Current)](https://github.com/thecoder75/lamd/releases/3.0.1)
+[![Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/v3.1.0/total.svg?style=flat&label=Current)](https://github.com/thecoder75/lamd/releases/v3.1.0)
 
 All Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
 
