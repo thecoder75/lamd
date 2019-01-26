@@ -95,7 +95,6 @@ app.on('activate', () => {
 const dlQueue = async.queue((task, done) => {
 
     LiveMe.getVideoInfo(task).then(video => {
-        const path = appSettings.downloads.path
         const dt = new Date(video.vtime * 1000)
         const mm = dt.getMonth() + 1
         const dd = dt.getDate()
@@ -135,7 +134,7 @@ const dlQueue = async.queue((task, done) => {
             body.split('\n').forEach(line => {
                 if (line.indexOf('.ts') !== -1) {
                     const tsName = line.split('?')[0]
-                    let tsPath = `${path}/lamd_temp/${video.vid}_${tsName}`
+                    let tsPath = `${appSettings.downloads.path}/lamd_temp/${video.vid}_${tsName}`
 
                     if (process.platform == 'win32') {
                         tsPath = tsPath.replace(/\\/g, '/');
@@ -148,17 +147,17 @@ const dlQueue = async.queue((task, done) => {
                 }
             })
             
-            if (!fs.existsSync(`${path}/lamd_temp`)) {
-                fs.mkdirSync(`${path}/lamd_temp`)
+            if (!fs.existsSync(`${appSettings.downloads.path}/lamd_temp`)) {
+                fs.mkdirSync(`${appSettings.downloads.path}/lamd_temp`)
             }
-            fs.writeFileSync(`${path}/lamd_temp/${video.vid}.txt`, concatList)
+            fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
 
             let downloadedChunks = 0
-            async.eachLimit(tsList, 5, (file, next) => {
+            async.eachLimit(tsList, 3, (file, next) => {
 
                 const stream = request(`${video.hlsvideosource.split('/').slice(0, -1).join('/')}/${file.name}`)
                     .on('error', err => {
-                        fs.writeFileSync(`${path}/${filename}-error.log`, JSON.stringify(err, null, 2))
+                        fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, JSON.stringify(err, null, 2))
                         return done({ videoid: task, error: err })
                     })
                     .pipe(
@@ -178,16 +177,7 @@ const dlQueue = async.queue((task, done) => {
                     })
 
             }, () => {
-                let cfile = path + '/lamd_temp/' + video.vid + '.txt'
-                let concatFile = fs.readFileSync(cfile, 'utf-8')
-                let cList = []
-
-                concatFile.split('\n').forEach(line => {
-                    let l = line.split(' ')
-                    
-                    if (l.length > 1)
-                        cList.push(`${path}/lamd_temp/${l[1]}`)
-                })
+                let concatList = fs.readFileSync(appSettings.downloads.path + '/lamd_temp/' + video.vid + '.txt', 'utf-8')
 
                 mainWindow.webContents.send('download-progress', {
                     videoid: task,
@@ -195,14 +185,14 @@ const dlQueue = async.queue((task, done) => {
                     percent: 0
                 })
 
-                concat(cList, `${path}/${filename}.ts`, (err) => {
+                concat(concatList, `${appSettings.downloads.path}/${filename}.ts`, (err) => {
                     if (err) {
                         mainWindow.webContents.send('download-progress', {
                             videoid: task,
                             state: `Error combining chunks`,
                             percent: 100
                         })
-                        fs.writeFileSync(`${path}/${filename}-error.log`, err)
+                        fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, err)
                         return done({ videoid: task, error: err })
                     }
                 })
@@ -231,7 +221,7 @@ const dlQueue = async.queue((task, done) => {
                             }
                         }
 
-                        fs.writeFileSync(`${path}/${filename}-chat.txt`, dump)
+                        fs.writeFileSync(`${appSettings.downloads.path}/${filename}-chat.txt`, dump)
                         return done()
                     })
                 }
