@@ -15,6 +15,12 @@ This is a stand-alone application designed to run in the background and monitor 
 
 * * *
 
+### Getting Support
+
+For assistance in configuration and usage of LAMD, please visit the Discord Chat room.
+
+* * *
+
 ### Supported OS/Platforms
 - Microsoft Windows 7 or higher (64-bit only)
 - Ubuntu-based Linux and Debian Distributions (64-bit only)
