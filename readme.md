@@ -1,23 +1,24 @@
 # LiveMe Account Monitor Daemon (L.A.M.D.)
-![GNU AGPLv3](https://img.shields.io/github/license/thecoder75/lamd.svg)
-![Current Release](https://img.shields.io/github/release/thecoder75/lamd.svg)
-![Current Release Date](https://img.shields.io/github/release-date/thecoder75/lamd.svg)
-![Last Commit Date](https://img.shields.io/github/last-commit/thecoder75/lamd.svg)
-![Active Issues](https://img.shields.io/github/issues/thecoder75/lamd.svg)
-![Discord Chat](https://img.shields.io/discord/340106715334836224.svg)
+[![GNU AGPLv3](https://img.shields.io/github/license/thecoder75/lamd.svg)](LICENSE)
+[![Current Release](https://img.shields.io/github/release/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/releases/latest)
+[![Current Release Date](https://img.shields.io/github/release-date/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/releases/latest)
+[![Last Commit Date](https://img.shields.io/github/last-commit/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/commits/master)
+[![Active Issues](https://img.shields.io/github/issues/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/issues)
+[![Discord Chat](https://img.shields.io/discord/340106715334836224.svg)](https://discord.gg/A5p2aF4)
 
+**A big thank you to all those who are now contributing to help make this tool even better!**
+
+### Support/Assistance/Reporting Issues
+
+Please *only* use the Issue Tracker here for bugs and glitches!  To discuss thoughts on improvements, features or for general usage support, please use the [Discord chat room](https://discord.gg/A5p2aF4).  There is always people in the chat room who will provide assistance.
 
 This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
+
+* * *
 
 ### Important Update!!!
 
 **LAMD will no longer support its web interface and instead will rely on LiveMe Pro Tools (beginning 1.309 release) for configuration and monitored account list.  Be sure to have LiveMe Pro Tools v1.309 or higher installed and configured before using LAMD or it will not work!**
-
-* * *
-
-### Getting Support
-
-For assistance in configuration and usage of LAMD, please visit the Discord Chat room.
 
 * * *
 
@@ -32,6 +33,8 @@ For assistance in configuration and usage of LAMD, please visit the Discord Chat
 [![Downloads](https://img.shields.io/github/downloads/thecoder75/lamd/v3.1.0/total.svg?style=flat&label=Current)](https://github.com/thecoder75/lamd/releases/v3.1.0)
 
 All Prebuilt downloads can be found on the [releases](https://github.com/thecoder75/lamd/releases) page.
+
+* * *
 
 ### FFMPEG No Longer Required!!!
 ***All reliance on FFMPEG has been removed from this project.***
