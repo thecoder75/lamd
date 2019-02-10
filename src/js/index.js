@@ -169,8 +169,6 @@ function beginBookmarkScan() {
                 bookmarks[bookmark_index].lamd.monitor = false
             }
             if (bookmarks[bookmark_index].lamd.monitor == true) {
-                console.log(`${bookmark_index} - Checking ${bookmarks[bookmark_index].nickname}`)
-
                 let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
                 $('#statusbar h1').html(`Scanning ${bookmarks[bookmark_index].nickname} (${bookmarks[bookmark_index].uid}) ${t}`)
                 scanForNewReplays(bookmark_index)
@@ -203,8 +201,6 @@ function beginBookmarkScan() {
             }
         );
     }
-
-
 }
 
 
@@ -229,7 +225,11 @@ function scanForNewReplays(index) {
         var replay_count = 0
         for (ii = 0; ii < replays.length; ii++) {
             if ((replays[ii].vtime - last_scanned) > 0) {
-                ipcRenderer.send('add-download', { videoid: replays[ii].vid })                    
+                if (replays[ii].status === 0) {
+                    // It's currently live, so we skip it
+                } else {
+                    ipcRenderer.send('add-download', { videoid: replays[ii].vid })                    
+                }
             }
         }
     })
