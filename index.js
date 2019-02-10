@@ -150,7 +150,7 @@ const dlQueue = async.queue((task, done) => {
             if (!fs.existsSync(`${appSettings.downloads.path}/lamd_temp`)) {
                 fs.mkdirSync(`${appSettings.downloads.path}/lamd_temp`)
             }
-            //fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
+            fs.writeFileSync(`${appSettings.downloads.path}/lamd_temp/${video.vid}.txt`, concatList)
 
             let downloadedChunks = 0
             async.eachLimit(tsList, 4, (file, next) => {
@@ -177,7 +177,7 @@ const dlQueue = async.queue((task, done) => {
                     })
 
             }, () => {
-                //let concatList = fs.readFileSync(appSettings.downloads.path + '/lamd_temp/' + video.vid + '.txt', 'utf-8')
+                let concatList = fs.readFileSync(appSettings.downloads.path + '/lamd_temp/' + video.vid + '.txt', 'utf-8')
 
                 mainWindow.webContents.send('download-progress', {
                     videoid: task,
@@ -185,7 +185,7 @@ const dlQueue = async.queue((task, done) => {
                     percent: 0
                 })
 
-                concat(concatList, `${appSettings.downloads.path}/${filename}.ts`, (err) => {
+                concat(concatList.split(','), `${appSettings.downloads.path}/${filename}.ts`, (err) => {
                     if (err) {
                         mainWindow.webContents.send('download-progress', {
                             videoid: task,
