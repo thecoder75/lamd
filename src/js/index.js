@@ -224,10 +224,8 @@ function scanForNewReplays(index) {
 
         var replay_count = 0
         for (ii = 0; ii < replays.length; ii++) {
-            if ((replays[ii].vtime - last_scanned) > 0) {
-                if (replays[ii].status === 0) {
-                    // It's currently live, so we skip it
-                } else {
+            if (replays[ii].status > 0) {
+                if ((replays[ii].vtime - last_scanned) > 0) {
                     ipcRenderer.send('add-download', { videoid: replays[ii].vid })                    
                 }
             }
