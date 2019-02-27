@@ -4,17 +4,28 @@
 [![Current Release Date](https://img.shields.io/github/release-date/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/releases/latest)
 [![Last Commit Date](https://img.shields.io/github/last-commit/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/commits/master)
 [![Active Issues](https://img.shields.io/github/issues/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/issues)
-[![Gitter](https://badges.gitter.im/thecoderstoolbox/community.svg)](https://gitter.im/thecoderstoolbox/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 **A big thank you to all those who are now contributing to help make this tool even better!**
 
-### Support/Assistance/Reporting Issues
+* * *
 
-Please *only* use the Issue Tracker here for bugs and glitches!  To discuss thoughts on improvements, features or for general usage support, please use the [Gitter chat room](https://gitter.im/thecoderstoolbox/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link).  There is always people in the chat room who will provide assistance.
+### Getting Support or Assistance
 
-**After almost 2 years, Discord zapped my account.  Looking into alternative chat site to use now!**
+**Due to Discord zapping the chat server, I will respond to Issue tickets here related *only* to:**
+- Feature Support and Requests
+- Bugs Discovered
+- Basic Setup and Troubleshooting
 
-This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.
+**What will be ignored:**
+- Requests for help in using
+- Requests for help in finding things
+- Requests for help with downloading not deemed a bug
+
+***I DO NOT RESPOND TO EMAILS ASKING FOR ASSISTANCE OR ANYTHING ELSE RELATED TO THIS OR ANY OTHER OF MY PROJECTS, SO DON'T WASTE YOUR TIME SENDING THEM!*** 
+
+* * *
+
+**This is a stand-alone application designed to run in the background and monitor Live.me Social accounts and automatically download new replays as they are detected.**
 
 * * *
 
