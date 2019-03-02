@@ -12,8 +12,6 @@
 
 ### Getting Support or Assistance
 
-### Getting Support or Assistance
-
 Since Discord banned my account and killed the old chat server, I have now set up [Gitter](https://gitter.im/thecoderstoolbox/lamd-3xx) for discussion on the development and usage of L.A.M.D. Please use this for more general usage and installation questions as others on there will provide assistance also.
 
 For general bugs or feature requests, feel free to open an Issue ticket.
