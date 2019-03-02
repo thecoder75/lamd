@@ -4,6 +4,7 @@
 [![Current Release Date](https://img.shields.io/github/release-date/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/releases/latest)
 [![Last Commit Date](https://img.shields.io/github/last-commit/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/commits/master)
 [![Active Issues](https://img.shields.io/github/issues/thecoder75/lamd.svg)](https://github.com/thecoder75/lamd/issues)
+[![Gitter](https://badges.gitter.im/thecoderstoolbox/lamd-3xx.svg)](https://gitter.im/thecoderstoolbox/lamd-3xx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 **A big thank you to all those who are now contributing to help make this tool even better!**
 
