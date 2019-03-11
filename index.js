@@ -133,7 +133,7 @@ const dlQueue = async.queue((task, done) => {
             const tsList = []
             body.split('\n').forEach(line => {
                 if (line.indexOf('.ts') !== -1) {
-                    const tsName = line.split('?')[0]
+                    const tsName = line.split('?')[0].replace('/', '_')
                     let tsPath = `${appSettings.downloads.path}/lamd_temp/${video.vid}_${tsName}`
 
                     if (process.platform == 'win32') {
