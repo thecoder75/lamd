@@ -61,7 +61,7 @@ function createWindow() {
             mainWindow = null
 
         })
-    
+
     appSettings.path = op
 
     global.appSettings = appSettings
@@ -146,7 +146,7 @@ const dlQueue = async.queue((task, done) => {
                     }
                 }
             })
-            
+
             if (!fs.existsSync(`${appSettings.downloads.path}/lamd_temp`)) {
                 fs.mkdirSync(`${appSettings.downloads.path}/lamd_temp`)
             }
@@ -196,7 +196,7 @@ const dlQueue = async.queue((task, done) => {
                     }
                     mainWindow.webContents.send('download-complete', { videoid: task })
                 })
-                
+
                 if (appSettings.downloads.saveMessageHistory == true) {
                     LiveMe.getChatHistoryForVideo(video.msgfile)
                     .then(raw => {
@@ -207,7 +207,7 @@ const dlQueue = async.queue((task, done) => {
                             try {
                                 let j = JSON.parse(t[i])
                                 let timeStamp = formatDuration(parseInt(j.timestamp) - startTime)
-    
+
                                 if (j.objectName === 'app:joinchatroommsgcontent') {
                                 } else if (j.objectName === 'app:leavechatrrommsgcontent') {
                                 } else if (j.objectName === 'app:praisemsgcontent') {
@@ -228,7 +228,7 @@ const dlQueue = async.queue((task, done) => {
                 return done()
 
             })
-                
+
         })
 
     })
@@ -258,229 +258,3 @@ ipcMain.on('cancel-download', (event, arg) => {
 
 
 
-
-
-
-
-/*
-
-function main() {
-
-
-
-    if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-        loadBookmarks()
-        fs.watch(path.join(op, 'bookmarks.json'), () => {
-            if (bookmarks_loading) return;
-            bookmarks_loading = true;
-            loadBookmarks()
-        })
-    }
-    
-}
-
-async function tickThread() {
-    if (active_downloads.length > 0) {
-        let y = 0
-
-        terminal.color('bright-green')
-        terminal.writexy(3,22,'Downloading '+download_list.length+' replays')
-
-        for (var vid in active_downloads) {
-            
-            let p = active_downloads[vid].progress + '%'
-            terminal.color('white')
-            terminal.writexy(2, 6 + y, vid)
-            terminal.color('bright-yellow')
-            terminal.writexy(78 - p, 6 + y, active_downloads[vid].status)
-            terminal.color('bright-blue')
-            terminal.writexy(2, 7 + y, active_downloads[vid].status)
-
-            y += 3
-        }
-    }
-
-
-
-    secondTicks++
-
-    let t1 = 29 - minuteTicks
-    let t2 = 60 - secondTicks
-    if (t1 < 10) t1 = '0' + t1
-    if (t2 < 10) t2 = '0' + t2
-    
-    if (!scan_active && (minuteTicks > 15)) {
-        terminal.color('bright-cyan')
-        terminal.writexy(12,4,`Next scan in ${t1}:${t2}`)
-    }
-
-    if (!scan_active && (minuteTicks < 16)) {
-        terminal.color('bright-blue')
-        terminal.writexy(1,  4, '|                                                                              |')
-        terminal.color('blue')
-        terminal.writexy( 3, 4,'Status:')
-    }
-
-    if (secondTicks > 59) {
-        secondTicks = 0
-        minuteTicks++
-
-        terminal.color('bright-blue')
-        terminal.writexy(1,  4, '|                                                                              |')
-        terminal.color('blue')
-        terminal.writexy( 3, 4,'Status:')
-
-        if (minuteTicks > 29) {
-            // We begin a scan process
-            minuteTicks = 0;
-
-            if (isOnline) {
-                scan_active = true
-                beginBookmarkScan()
-            } else {
-                terminal.color('bright-blue')
-                terminal.writexy(1,  4, '|                                                                              |')
-                terminal.color('blue')
-                terminal.writexy( 3, 4,'Status:')
-            }
-        }
-    }
-
-    setTimeout(() => {
-        tickThread()
-    }, 1000)
-
-}
-
-function loadBookmarks() {
-    if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-        // Configuration file was found
-
-        if (fs.existsSync(path.join(op, 'bookmarks.json'))) {
-            setTimeout(()=>{
-
-                let t = '        Loading bookmarks...'
-                terminal.color('bright-yellow')
-                terminal.writexy(79 - t, 22, t)
-
-                fs.readFile(path.join(op, 'bookmarks.json'), 'utf8', function(err, data) {
-                    if (err) {
-                        bookmarks = []
-                    } else {
-                        bookmarks = JSON.parse(data)
-                        if (bookmarks.length == 0) return
-    
-                        bookmark_index = 0;
-    
-                        setTimeout(() => {
-                            let t = '       ' + bookmarks.length + ' bookmarks loaded.'
-                            terminal.color('bright-magenta')
-                            terminal.writexy(79 - t.length, 22, t)
-                        }, 1000)                        
-            
-                    }
-                    bookmarks_loading = false
-                })
-            }, 250)
-        }
-
-    }    
-}
-
-
-
-
-
-
-function beginBookmarkScan() {
-
-    if (bookmarks[bookmark_index] != undefined) {
-        if (bookmarks[bookmark_index].lamd != undefined) {
-            if (bookmarks[bookmark_index].lamd.monitored == true) {
-                terminal.color('bright-yellow')
-                terminal.writexy(15,4,`Scanning bookmarks now (${bookmarks[bookmark_index].uid})...`)
-                
-                let t = Math.round((bookmark_index / bookmarks.length) * 100) + '%'
-                terminal.color('bright-white')
-                terminal.writexy( 78 - t.length, 4, t)
-
-                scanForNewReplays(bookmark_index)
-            }
-        } else {
-            bookmarks[bookmark_index].lamd = {
-                monitored: false,
-                last_checked: 0
-            }
-        }
-    } else {
-        terminal.color('bright-blue')
-        terminal.writexy(1,  4, '|                                                                              |')
-        terminal.color('blue')
-        terminal.writexy( 3, 4,'Status:')
-
-        scan_active = false
-
-        fs.writeFile(
-            path.join(op, 'bookmarks.json'),
-            JSON.stringify(bookmarks), 
-            () => {
-                
-            }
-        );
-        
-    }
-
-    bookmark_index++
-
-    if (bookmark_index < bookmarks.length) {
-        setTimeout(() => {
-            beginBookmarkScan()
-        }, 50)
-    } else {
-        bookmark_index = 0;
-    }
-
-
-}
-
-
-function scanForNewReplays(i) {
-
-    if (bookmarks[i] == undefined) return
-
-    LiveMe.getUserReplays(bookmarks[i].uid, 1, 10).then(replays => {
-
-        if (replays == undefined) return
-        if (replays.length < 1) return
-
-        let ii = 0
-        let count = 0
-        let userid = replays[0].userid
-        let last_scanned = 0
-        let dt = Math.floor((new Date()).getTime() / 1000)
-
-        last_scanned = bookmarks[i].lamd.last_checked
-        bookmarks[i].lamd.last_checked = dt
-
-        var replay_count = 0
-        for (ii = 0; ii < replays.length; ii++) {
-            if ((replays[ii].vtime - last_scanned) > 0) {
-                var add_replay = true;
-                for (var j = 0; j < download_list.length; j++) {
-                    if (download_list[j] == replays[ii].vid) add_replay = false
-                }
-                if (add_replay == true) {
-                    download_list.push(replays[ii].vid)
-                    dlQueue.push(replays[ii].vid, err => {
-
-                    })
-                }
-            }
-        }
-
-    })
-
-}
-
-
-*/
