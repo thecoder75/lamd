@@ -71,7 +71,7 @@
             "desktop": {
                 "Encoding": "UTF-8",
                 "Terminal": false,
-                "Name": "LiveMe Account Monitor Daemon (LAMD)",
+                "Name": "LiveMe Account Monitor Daemon (LAMD)"
             },
             "publish": null
         },
