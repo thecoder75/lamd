@@ -27,7 +27,8 @@
         "request-promise-native": "^1.0.5"
     },
     "devDependencies": {
-        "electron": "^3.1.2"
+        "electron": "^3.1.8",
+        "electron-builder": "^20.39.0"
     },
     "build": {
         "appId": "com.thecoderstoolbox.lamd",
@@ -66,7 +67,13 @@
             ],
             "category": "Network",
             "description": "Browse, search and manage accounts, replays and more without the need of an actual account on Live.me.",
-            "maintainer": "thecoder1975@gmail.com"
+            "maintainer": "thecoder1975@gmail.com",
+            "desktop": {
+                "Encoding": "UTF-8",
+                "Terminal": false,
+                "Name": "LiveMe Account Monitor Daemon (LAMD)",
+            },
+            "publish": null
         },
         "appImage": {
             "category": "Network"
@@ -80,7 +87,8 @@
                     ]
                 }
             ],
-            "icon": "build/icon.png"
+            "icon": "build/icon.png",
+            "publish": null
         },
         "nsis": {
             "oneClick": false,
@@ -93,7 +101,8 @@
                 "zip"
             ],
             "identity": null,
-            "icon": "build/icon.png"
+            "icon": "build/icon.png",
+            "publish": null
         }
     }
 }
