@@ -123,7 +123,19 @@ const dlQueue = async.queue((task, done) => {
             filename: filename
         })
 
-        request(video.hlsvideosource, (err, res, body) => {
+        let properSource = LiveMe.pickProperVideoSource(video)
+
+        if (properSource === '') {
+            let err = "Replay might still being generated or was deleted. Refresh the user's page and try again."
+
+            fs.writeFileSync(`${path}/${filename}-error.log`, err)
+            return done({
+                videoid: task,
+                error: err
+            })
+        }
+
+        request(properSource, (err, res, body) => {
             if (err || !body) {
                 fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, JSON.stringify(err, null, 2))
                 return done({ videoid: task, error: err || 'Failed to fetch m3u8 file.' })
@@ -133,8 +145,8 @@ const dlQueue = async.queue((task, done) => {
             const tsList = []
             body.split('\n').forEach(line => {
                 if (line.indexOf('.ts') !== -1) {
-                    const tsName = line.split('?')[0].replace('/', '_')
-                    let tsPath = `${appSettings.downloads.path}/lamd_temp/${video.vid}_${tsName}`
+                    let tsName = video.vid + '_' + line.split('?')[0].replace(/\//g, '_')
+                    let tsPath = `${path}/lmpt_temp/${tsName}`
 
                     if (process.platform == 'win32') {
                         tsPath = tsPath.replace(/\\/g, '/');
@@ -142,7 +154,7 @@ const dlQueue = async.queue((task, done) => {
 
                     if (concatList.indexOf(tsPath) === -1) {
                         concatList.push(tsPath)
-                        tsList.push({ name: tsName, path: tsPath })
+                        tsList.push({ name: tsName, path: tsPath, url: line.split('?')[0] })
                     }
                 }
             })
@@ -155,8 +167,8 @@ const dlQueue = async.queue((task, done) => {
             let downloadedChunks = 0
             async.eachLimit(tsList, 4, (file, next) => {
 
-                const stream = request(`${video.hlsvideosource.split('/').slice(0, -1).join('/')}/${file.name}`)
-                    .on('error', err => {
+            const stream = request(`${properSource.split('/').slice(0, -1).join('/')}/${file.url}`)
+                .on('error', err => {
                         fs.writeFileSync(`${appSettings.downloads.path}/${filename}-error.log`, JSON.stringify(err, null, 2))
                         return done({ videoid: task, error: err })
                     })
